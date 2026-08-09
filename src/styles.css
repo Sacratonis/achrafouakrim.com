@@ -20,9 +20,10 @@ h1,h2,h3,p { margin-top:0; }
 h1,h2 { font-family:'Space Grotesk', Arial, sans-serif; font-weight:500; letter-spacing:-.045em; }
 h1 { max-width:720px; margin-bottom:22px; font-size:clamp(47px, 6.2vw, 83px); line-height:.95; text-transform:uppercase; }
 .hero-summary { max-width:540px; margin:0; color:var(--text); font-size:16px; line-height:1.32; }
-.social-row { display:flex; gap:26px; position:absolute; left:32px; bottom:40px; }
+.social-row { display:flex; flex-wrap:wrap; gap:16px; max-width:calc(100% - 64px); position:absolute; left:32px; bottom:40px; }
 .round-link { width:48px; height:48px; display:grid; place-items:center; border-radius:50%; background:var(--cream); color:#111; transition:transform .22s ease, background .22s ease; }
 .round-link:hover { transform:rotate(8deg) scale(1.08); background:var(--orange); }
+.social-mark-text { font-size:15px; font-weight:700; letter-spacing:-.08em; }
 .portrait-card { position:relative; overflow:hidden; min-height:447px; background:#1a1919; }
 .portrait-card img { width:100%; height:100%; min-height:447px; object-fit:cover; object-position:center; mix-blend-mode:normal; }
 .hello-badge { position:absolute; z-index:1; top:72px; left:50%; transform:translateX(-50%); white-space:nowrap; padding:8px 14px; border:1px dashed var(--text); border-radius:999px; color:#151515; background:var(--text); font-size:14px; }
@@ -373,7 +374,7 @@ h2 { font-size:clamp(35px, 4.4vw, 60px); line-height:.98; }
 .hero-intro { min-height:465px; padding:34px 22px 112px; }
   .eyebrow { margin-bottom:26px; }
   h1 { font-size:clamp(42px, 13vw, 64px); }
-  .social-row { left:22px; bottom:28px; gap:16px; }
+  .social-row { left:22px; bottom:28px; max-width:calc(100% - 44px); gap:12px; }
   .portrait-card, .portrait-card img { min-height:400px; }
   .hello-badge { top:28px; font-size:12px; }
   .work-grid { grid-template-columns:1fr; grid-template-rows:repeat(3, 260px); }

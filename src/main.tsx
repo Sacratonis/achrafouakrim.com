@@ -1,6 +1,6 @@
 import { StrictMode, useEffect, useRef, useState, type MouseEvent } from "react";
 import { createRoot } from "react-dom/client";
-import { ArrowUpRight, Download, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowUpRight, Download, Dribbble, Instagram, Linkedin, Mail, MapPin } from "lucide-react";
 import { portfolio } from "./portfolioData";
 import "./styles.css";
 
@@ -14,6 +14,13 @@ type ShowcaseProject = {
   images: ShowcaseImage[];
   external?: boolean;
 };
+
+function SocialMark({ label }: { label: string }) {
+  if (label === "Instagram") return <Instagram size={17} aria-hidden="true" />;
+  if (label === "LinkedIn") return <Linkedin size={17} aria-hidden="true" />;
+  if (label === "Dribbble") return <Dribbble size={17} aria-hidden="true" />;
+  return <span className="social-mark-text" aria-hidden="true">Be</span>;
+}
 
 function ShowcaseProjectCard({ project, index }: { project: ShowcaseProject; index: number }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -173,10 +180,14 @@ function Hero() {
         <p className="eyebrow">{portfolio.role}</p>
         <h1>Graphic designer<br />based in Morocco</h1>
         <p className="hero-summary">{portfolio.summary}</p>
-        <div className="social-row" aria-label="Contact links">
-          <a className="round-link" href={`mailto:${portfolio.email}`} aria-label="Email Achraf" title="Email Achraf"><Mail size={17} /></a>
-          <a className="round-link" href={`tel:${portfolio.phone.replace(/\s/g, "")}`} aria-label="Call Achraf" title="Call Achraf"><Phone size={17} /></a>
-          <a className="round-link" href={portfolio.resume.href} target="_blank" rel="noreferrer" aria-label="Open CV" title="Open CV"><Download size={17} /></a>
+      <div className="social-row" aria-label="Contact links">
+        <a className="round-link" href={`mailto:${portfolio.email}`} aria-label="Email Achraf" title="Email Achraf"><Mail size={17} /></a>
+        {portfolio.socials.map((social) => (
+          <a className="round-link" href={social.href} target="_blank" rel="noreferrer" aria-label={social.label} title={social.label} key={social.label}>
+            <SocialMark label={social.label} />
+          </a>
+        ))}
+        <a className="round-link" href={portfolio.resume.href} target="_blank" rel="noreferrer" aria-label="Open CV" title="Open CV"><Download size={17} /></a>
         </div>
       </div>
       <div className="portrait-card reveal">
@@ -896,7 +907,6 @@ function Contact() {
         <div className="contact-details">
           <p>{portfolio.contact.description}</p>
           <a className="contact-email" href={`mailto:${portfolio.email}`}>{portfolio.email} <ArrowUpRight size={19} /></a>
-          <a className="contact-phone" href={`tel:${portfolio.phone.replace(/\s/g, "")}`}>{portfolio.phone}</a>
           <div className="contact-socials">
             <a href={`mailto:${portfolio.email}`}><Mail size={17} /> Email</a>
             {portfolio.socials.map((social) => <a href={social.href} key={social.label} target="_blank" rel="noreferrer"><ArrowUpRight size={17} /> {social.label}</a>)}
