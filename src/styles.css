@@ -86,6 +86,7 @@ h2 { font-size:clamp(35px, 4.4vw, 60px); line-height:.98; }
 .education-line { display:flex; justify-content:space-between; gap:20px; padding-top:24px; color:var(--muted); font-size:14px; }
 .education-line strong { color:var(--text); font-weight:400; }
 .poster-archive { width:100%; overflow:hidden; padding:150px 0 0; }
+.showcase-section, .packaging-index, .identity-index, .print-index, .vehicle-index, .poster-archive, .contact { content-visibility:auto; contain-intrinsic-size:720px; }
 .poster-archive-heading { width:min(1138px, calc(100% - 48px)); margin:0 auto 18px; display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:14px; }
 .poster-archive-heading .section-label { border:0; padding:0; color:var(--text); }
 .poster-marquee { overflow:hidden; padding:0 0 4px; }

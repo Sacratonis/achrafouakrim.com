@@ -175,7 +175,13 @@ function Hero() {
       </div>
       <div className="portrait-card reveal">
         <div className="hello-badge">✦ Hey there! I’m Achraf</div>
-        <img src={portfolio.headshot} alt={portfolio.headshotAlt} />
+        <img
+          src={portfolio.headshot}
+          alt={portfolio.headshotAlt}
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+        />
         <span className="portrait-location"><MapPin size={14} /> {portfolio.location}</span>
       </div>
     </section>
@@ -275,7 +281,7 @@ function PosterArchive() {
         <div className="poster-track">
           {posters.map((poster, index) => (
             <a className="poster-frame" href="https://www.behance.net/achraf_ouak" target="_blank" rel="noreferrer" key={`${poster.title}-${index}`}>
-              <img src={poster.image} alt={poster.alt} />
+              <img src={poster.image} alt={poster.alt} loading="lazy" decoding="async" />
               <span>{poster.title}</span>
             </a>
           ))}
@@ -339,8 +345,8 @@ function KaraRenaultVehicleWrapPage() {
         <div className="ikea-meta-row"><span>Client / KARA Distribution</span><span>Context / Delivery fleet</span><span>Scope / 2 vehicle views</span><span>Role / Vehicle graphics designer</span></div>
       </section>
       <section className="vehicle-visual-grid">
-        <figure><img src="/assets/vehicle-wrapping/kara-renault-front.jpg" alt="KARA Distribution Renault van wrap front and side view" /><figcaption><strong>Front and side application</strong><span>Brand visibility in motion</span></figcaption></figure>
-        <figure><img src="/assets/vehicle-wrapping/kara-renault-rear.jpg" alt="KARA Distribution Renault van wrap rear view" /><figcaption><strong>Rear application</strong><span>Contact details at the point of delivery</span></figcaption></figure>
+        <figure><img src="/assets/optimized/vehicle-wrapping/kara-renault-front.jpg" alt="KARA Distribution Renault van wrap front and side view" /><figcaption><strong>Front and side application</strong><span>Brand visibility in motion</span></figcaption></figure>
+        <figure><img src="/assets/optimized/vehicle-wrapping/kara-renault-rear.jpg" alt="KARA Distribution Renault van wrap rear view" /><figcaption><strong>Rear application</strong><span>Contact details at the point of delivery</span></figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Wrap system</div>
@@ -353,7 +359,7 @@ function KaraRenaultVehicleWrapPage() {
       </section>
       <section className="ikea-section vehicle-final-grid">
         <div><div className="section-label">Fleet presence</div><h2>One vehicle, several brand impressions.</h2><p>Vehicle wrapping extends a business identity beyond the storefront, turning everyday movement into repeated local visibility.</p></div>
-        <img src="/assets/vehicle-wrapping/kara-renault-front.jpg" alt="KARA Distribution branded Renault delivery van" />
+        <img src="/assets/optimized/vehicle-wrapping/kara-renault-front.jpg" alt="KARA Distribution branded Renault delivery van" />
       </section>
       <footer className="site-footer"><span>{portfolio.name}</span><span>KARA vehicle wrapping</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
@@ -362,12 +368,12 @@ function KaraRenaultVehicleWrapPage() {
 
 function IkeaPackagingPage() {
   const dielines = [
-    { title: "Sandwich tray", preview: "/assets/ikea/barquette-sandwich-dieline.png", pdf: "/assets/ikea/barquette-sandwich.pdf" },
-    { title: "Paper bag", preview: "/assets/ikea/paper-bag-dieline.png", pdf: "/assets/ikea/paper-bag.pdf" },
-    { title: "Sandwich bag", preview: "/assets/ikea/sac-sand-dieline.png", pdf: "/assets/ikea/sac-sand.pdf" },
-    { title: "Napkin", preview: "/assets/ikea/serviette-dieline.png", pdf: "/assets/ikea/serviette.pdf" },
-    { title: "Taco paper", preview: "/assets/ikea/papier-tacos-dieline.png", pdf: "/assets/ikea/papier-tacos.pdf" },
-    { title: "Carton cup", preview: "/assets/ikea/goblet-carton-dieline.png", pdf: "/assets/ikea/goblet-carton.pdf" },
+    { title: "Sandwich tray", preview: "/assets/optimized/ikea/barquette-sandwich-dieline.jpg", pdf: "/assets/ikea/barquette-sandwich.pdf" },
+    { title: "Paper bag", preview: "/assets/optimized/ikea/paper-bag-dieline.jpg", pdf: "/assets/ikea/paper-bag.pdf" },
+    { title: "Sandwich bag", preview: "/assets/optimized/ikea/sac-sand-dieline.jpg", pdf: "/assets/ikea/sac-sand.pdf" },
+    { title: "Napkin", preview: "/assets/optimized/ikea/serviette-dieline.jpg", pdf: "/assets/ikea/serviette.pdf" },
+    { title: "Taco paper", preview: "/assets/optimized/ikea/papier-tacos-dieline.jpg", pdf: "/assets/ikea/papier-tacos.pdf" },
+    { title: "Carton cup", preview: "/assets/optimized/ikea/goblet-carton-dieline.jpg", pdf: "/assets/ikea/goblet-carton.pdf" },
   ];
 
   return (
@@ -383,10 +389,10 @@ function IkeaPackagingPage() {
         <div className="ikea-meta-row"><span>Client / IKEA Morocco</span><span>Location / Casablanca</span><span>Scope / 6 formats</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="ikea-visual-grid">
-        <figure className="ikea-hero-image"><img src="/assets/ikea/cups.jpg" alt="IKEA Morocco branded paper cups mockup" /><figcaption>Paper cup application</figcaption></figure>
-        <figure><img src="/assets/ikea/serviette.jpg" alt="IKEA branded napkin mockup" /><figcaption>Napkin application</figcaption></figure>
-        <figure><img src="/assets/ikea/sac-sand.jpg" alt="IKEA branded paper bag mockup" /><figcaption>Paper bag application</figcaption></figure>
-        <figure><img src="/assets/ikea/papier-tacos.jpg" alt="IKEA branded taco paper mockup" /><figcaption>Taco paper application</figcaption></figure>
+        <figure className="ikea-hero-image"><img src="/assets/optimized/ikea/cups.jpg" alt="IKEA Morocco branded paper cups mockup" /><figcaption>Paper cup application</figcaption></figure>
+        <figure><img src="/assets/optimized/ikea/serviette.jpg" alt="IKEA branded napkin mockup" /><figcaption>Napkin application</figcaption></figure>
+        <figure><img src="/assets/optimized/ikea/sac-sand.jpg" alt="IKEA branded paper bag mockup" /><figcaption>Paper bag application</figcaption></figure>
+        <figure><img src="/assets/optimized/ikea/papier-tacos.jpg" alt="IKEA branded taco paper mockup" /><figcaption>Taco paper application</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Production process</div>
@@ -396,7 +402,7 @@ function IkeaPackagingPage() {
         <div className="section-label">Dieline library</div>
         <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section ikea-real-world"><div><div className="section-label">Real-world reference</div><h2>From artwork file to a physical food-service touchpoint.</h2></div><img src="/assets/ikea/real-cup.jpg" alt="Real IKEA branded paper cup reference held in hand" /></section>
+      <section className="ikea-section ikea-real-world"><div><div className="section-label">Real-world reference</div><h2>From artwork file to a physical food-service touchpoint.</h2></div><img src="/assets/optimized/ikea/real-cup.jpg" alt="Real IKEA branded paper cup reference held in hand" /></section>
       <footer className="site-footer"><span>{portfolio.name}</span><span>IKEA Morocco packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -404,13 +410,13 @@ function IkeaPackagingPage() {
 
 function MiamPackagingPage() {
   const dielines = [
-    { title: "Pastry box 12 × 12", preview: "/assets/miam/pastry-box-dieline.png", pdf: "/assets/miam/pastry-box.pdf" },
-    { title: "Square label", preview: "/assets/miam/square-label-dieline.png", pdf: "/assets/miam/square-label.pdf" },
-    { title: "Round dessert label", preview: "/assets/miam/round-label-dieline.png", pdf: "/assets/miam/round-label.pdf" },
-    { title: "Carton cup", preview: "/assets/miam/goblet-dieline.png", pdf: "/assets/miam/goblet-carton.pdf" },
-    { title: "Sandwich paper", preview: "/assets/miam/sandwich-paper-dieline.png", pdf: "/assets/miam/sandwich-paper.pdf" },
-    { title: "Paper tote bag", preview: "/assets/miam/tote-bag-dieline.png", pdf: "/assets/miam/tote-bag.pdf" },
-    { title: "Sandwich bag", preview: "/assets/miam/sandwich-bag-dieline.png", pdf: "/assets/miam/sandwich-bag.pdf" },
+    { title: "Pastry box 12 × 12", preview: "/assets/optimized/miam/pastry-box-dieline.jpg", pdf: "/assets/miam/pastry-box.pdf" },
+    { title: "Square label", preview: "/assets/optimized/miam/square-label-dieline.jpg", pdf: "/assets/miam/square-label.pdf" },
+    { title: "Round dessert label", preview: "/assets/optimized/miam/round-label-dieline.jpg", pdf: "/assets/miam/round-label.pdf" },
+    { title: "Carton cup", preview: "/assets/optimized/miam/goblet-dieline.jpg", pdf: "/assets/miam/goblet-carton.pdf" },
+    { title: "Sandwich paper", preview: "/assets/optimized/miam/sandwich-paper-dieline.jpg", pdf: "/assets/miam/sandwich-paper.pdf" },
+    { title: "Paper tote bag", preview: "/assets/optimized/miam/tote-bag-dieline.jpg", pdf: "/assets/miam/tote-bag.pdf" },
+    { title: "Sandwich bag", preview: "/assets/optimized/miam/sandwich-bag-dieline.jpg", pdf: "/assets/miam/sandwich-bag.pdf" },
   ];
 
   return (
@@ -426,10 +432,10 @@ function MiamPackagingPage() {
         <div className="ikea-meta-row"><span>Client / MIAM Café-Boutique</span><span>Scope / 7 formats</span><span>Focus / Food packaging</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="miam-visual-grid">
-        <figure className="miam-hero-image"><img src="/assets/miam/round-label.jpg" alt="MIAM round dessert labels in multiple color variants" /><figcaption>Label color system</figcaption></figure>
-        <figure><img src="/assets/miam/paper-bag.jpg" alt="MIAM paper bag mockup" /><figcaption>Paper bag</figcaption></figure>
-        <figure><img src="/assets/miam/goblet-carton.jpg" alt="MIAM branded carton cup mockup" /><figcaption>Carton cup</figcaption></figure>
-        <figure><img src="/assets/miam/stickers.jpg" alt="MIAM sticker and label mockups" /><figcaption>Sticker applications</figcaption></figure>
+        <figure className="miam-hero-image"><img src="/assets/optimized/miam/round-label.jpg" alt="MIAM round dessert labels in multiple color variants" /><figcaption>Label color system</figcaption></figure>
+        <figure><img src="/assets/optimized/miam/paper-bag.jpg" alt="MIAM paper bag mockup" /><figcaption>Paper bag</figcaption></figure>
+        <figure><img src="/assets/optimized/miam/goblet-carton.jpg" alt="MIAM branded carton cup mockup" /><figcaption>Carton cup</figcaption></figure>
+        <figure><img src="/assets/optimized/miam/stickers.jpg" alt="MIAM sticker and label mockups" /><figcaption>Sticker applications</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -439,7 +445,7 @@ function MiamPackagingPage() {
         <div className="section-label">Dieline library</div>
         <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section miam-final-grid"><div><div className="section-label">Final applications</div><h2>One visual language across the bakery counter and takeaway experience.</h2></div><div className="miam-final-images"><img src="/assets/miam/sandwich-bag.jpg" alt="MIAM sandwich bag with bread" /><img src="/assets/miam/stickers.jpg" alt="MIAM stickers on a colored surface" /></div></section>
+      <section className="ikea-section miam-final-grid"><div><div className="section-label">Final applications</div><h2>One visual language across the bakery counter and takeaway experience.</h2></div><div className="miam-final-images"><img src="/assets/optimized/miam/sandwich-bag.jpg" alt="MIAM sandwich bag with bread" /><img src="/assets/optimized/miam/stickers.jpg" alt="MIAM stickers on a colored surface" /></div></section>
       <footer className="site-footer"><span>{portfolio.name}</span><span>MIAM bakery packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -447,11 +453,11 @@ function MiamPackagingPage() {
 
 function CafeBonjourPackagingPage() {
   const dielines = [
-    { title: "Pastry box 12 × 12", preview: "/assets/cafe-bonjour/pastry-box-dieline.png", pdf: "/assets/cafe-bonjour/pastry-box.pdf" },
-    { title: "Carton cup", preview: "/assets/cafe-bonjour/goblet-dieline.png", pdf: "/assets/cafe-bonjour/goblet.pdf" },
-    { title: "Tote bag", preview: "/assets/cafe-bonjour/tote-bag-dieline.png", pdf: "/assets/cafe-bonjour/tote-bag.pdf" },
-    { title: "Fries bag", preview: "/assets/cafe-bonjour/fries-bag-dieline.png", pdf: "/assets/cafe-bonjour/fries-bag.pdf" },
-    { title: "Viennoiserie bag", preview: "/assets/cafe-bonjour/pastry-bag-dieline.png", pdf: "/assets/cafe-bonjour/pastry-bag.pdf" },
+    { title: "Pastry box 12 × 12", preview: "/assets/optimized/cafe-bonjour/pastry-box-dieline.jpg", pdf: "/assets/cafe-bonjour/pastry-box.pdf" },
+    { title: "Carton cup", preview: "/assets/optimized/cafe-bonjour/goblet-dieline.jpg", pdf: "/assets/cafe-bonjour/goblet.pdf" },
+    { title: "Tote bag", preview: "/assets/optimized/cafe-bonjour/tote-bag-dieline.jpg", pdf: "/assets/cafe-bonjour/tote-bag.pdf" },
+    { title: "Fries bag", preview: "/assets/optimized/cafe-bonjour/fries-bag-dieline.jpg", pdf: "/assets/cafe-bonjour/fries-bag.pdf" },
+    { title: "Viennoiserie bag", preview: "/assets/optimized/cafe-bonjour/pastry-bag-dieline.jpg", pdf: "/assets/cafe-bonjour/pastry-bag.pdf" },
   ];
 
   return (
@@ -467,10 +473,10 @@ function CafeBonjourPackagingPage() {
         <div className="ikea-meta-row"><span>Client / Café Bonjour</span><span>Context / Gas station food service</span><span>Scope / 5 dielines + 6 applications</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="cafe-visual-grid">
-        <figure className="cafe-hero-image"><img src="/assets/cafe-bonjour/goblet.jpg" alt="Café Bonjour branded takeaway coffee cup" /><figcaption>Coffee on the move</figcaption></figure>
-        <figure><img src="/assets/cafe-bonjour/tote-bag.jpg" alt="Café Bonjour branded paper tote bag" /><figcaption>Counter-to-car carry bag</figcaption></figure>
-        <figure><img src="/assets/cafe-bonjour/fries-bag.jpg" alt="Café Bonjour fries bag mockup" /><figcaption>Quick-service fries bag</figcaption></figure>
-        <figure><img src="/assets/cafe-bonjour/pastry-bag.jpg" alt="Café Bonjour pastry bag mockup" /><figcaption>Pastry takeaway</figcaption></figure>
+        <figure className="cafe-hero-image"><img src="/assets/optimized/cafe-bonjour/goblet.jpg" alt="Café Bonjour branded takeaway coffee cup" /><figcaption>Coffee on the move</figcaption></figure>
+        <figure><img src="/assets/optimized/cafe-bonjour/tote-bag.jpg" alt="Café Bonjour branded paper tote bag" /><figcaption>Counter-to-car carry bag</figcaption></figure>
+        <figure><img src="/assets/optimized/cafe-bonjour/fries-bag.jpg" alt="Café Bonjour fries bag mockup" /><figcaption>Quick-service fries bag</figcaption></figure>
+        <figure><img src="/assets/optimized/cafe-bonjour/pastry-bag.jpg" alt="Café Bonjour pastry bag mockup" /><figcaption>Pastry takeaway</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -480,7 +486,7 @@ function CafeBonjourPackagingPage() {
         <div className="section-label">Dieline library</div>
         <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section cafe-final-grid"><div><div className="section-label">On-the-go food service</div><h2>One visual language across the station counter and the customer journey.</h2></div><div className="cafe-final-images"><img src="/assets/cafe-bonjour/sandwich-bag.jpg" alt="Café Bonjour sandwich bag with bread" /><img src="/assets/cafe-bonjour/pastry-box.jpg" alt="Café Bonjour pastry box mockup" /></div></section>
+      <section className="ikea-section cafe-final-grid"><div><div className="section-label">On-the-go food service</div><h2>One visual language across the station counter and the customer journey.</h2></div><div className="cafe-final-images"><img src="/assets/optimized/cafe-bonjour/sandwich-bag.jpg" alt="Café Bonjour sandwich bag with bread" /><img src="/assets/optimized/cafe-bonjour/pastry-box.jpg" alt="Café Bonjour pastry box mockup" /></div></section>
       <footer className="site-footer"><span>{portfolio.name}</span><span>Café Bonjour packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -488,13 +494,13 @@ function CafeBonjourPackagingPage() {
 
 function DarDyafaPackagingPage() {
   const dielines = [
-    { title: "Pizza box 24 cm", preview: "/assets/dar-dyafa/pizza-box-dieline.png", pdf: "/assets/dar-dyafa/pizza-box.pdf" },
-    { title: "Large tote bag", preview: "/assets/dar-dyafa/tote-bag-large-dieline.png", pdf: "/assets/dar-dyafa/tote-bag-large.pdf" },
-    { title: "Medium tote bag", preview: "/assets/dar-dyafa/tote-bag-medium-dieline.png", pdf: "/assets/dar-dyafa/tote-bag-medium.pdf" },
-    { title: "Carton cup", preview: "/assets/dar-dyafa/goblet-dieline.png", pdf: "/assets/dar-dyafa/goblet.pdf" },
-    { title: "Sandwich bag / option 1", preview: "/assets/dar-dyafa/sandwich-bag-1-dieline.png", pdf: "/assets/dar-dyafa/sandwich-bag-1.pdf" },
-    { title: "Sandwich bag / option 2", preview: "/assets/dar-dyafa/sandwich-bag-2-dieline.png", pdf: "/assets/dar-dyafa/sandwich-bag-2.pdf" },
-    { title: "Fries bag", preview: "/assets/dar-dyafa/fries-bag-dieline.png", pdf: "/assets/dar-dyafa/fries-bag.pdf" },
+    { title: "Pizza box 24 cm", preview: "/assets/optimized/dar-dyafa/pizza-box-dieline.jpg", pdf: "/assets/dar-dyafa/pizza-box.pdf" },
+    { title: "Large tote bag", preview: "/assets/optimized/dar-dyafa/tote-bag-large-dieline.jpg", pdf: "/assets/dar-dyafa/tote-bag-large.pdf" },
+    { title: "Medium tote bag", preview: "/assets/optimized/dar-dyafa/tote-bag-medium-dieline.jpg", pdf: "/assets/dar-dyafa/tote-bag-medium.pdf" },
+    { title: "Carton cup", preview: "/assets/optimized/dar-dyafa/goblet-dieline.jpg", pdf: "/assets/dar-dyafa/goblet.pdf" },
+    { title: "Sandwich bag / option 1", preview: "/assets/optimized/dar-dyafa/sandwich-bag-1-dieline.jpg", pdf: "/assets/dar-dyafa/sandwich-bag-1.pdf" },
+    { title: "Sandwich bag / option 2", preview: "/assets/optimized/dar-dyafa/sandwich-bag-2-dieline.jpg", pdf: "/assets/dar-dyafa/sandwich-bag-2.pdf" },
+    { title: "Fries bag", preview: "/assets/optimized/dar-dyafa/fries-bag-dieline.jpg", pdf: "/assets/dar-dyafa/fries-bag.pdf" },
   ];
 
   return (
@@ -510,10 +516,10 @@ function DarDyafaPackagingPage() {
         <div className="ikea-meta-row"><span>Client / Dar Dyafa</span><span>Context / Restaurant takeaway</span><span>Scope / 7 dielines + 5 applications</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="dar-visual-grid">
-        <figure className="dar-hero-image"><img src="/assets/dar-dyafa/pizza-box.jpg" alt="Dar Dyafa patterned pizza box stack" /><figcaption>Delivery box system</figcaption></figure>
-        <figure><img src="/assets/dar-dyafa/tote-bag.jpg" alt="Dar Dyafa patterned paper tote bag" /><figcaption>Restaurant carry bag</figcaption></figure>
-        <figure><img src="/assets/dar-dyafa/goblet.jpg" alt="Dar Dyafa patterned takeaway coffee cup in hand" /><figcaption>Takeaway cup</figcaption></figure>
-        <figure><img src="/assets/dar-dyafa/fries-bag.jpg" alt="Dar Dyafa patterned fries bag" /><figcaption>Fries packaging</figcaption></figure>
+        <figure className="dar-hero-image"><img src="/assets/optimized/dar-dyafa/pizza-box.jpg" alt="Dar Dyafa patterned pizza box stack" /><figcaption>Delivery box system</figcaption></figure>
+        <figure><img src="/assets/optimized/dar-dyafa/tote-bag.jpg" alt="Dar Dyafa patterned paper tote bag" /><figcaption>Restaurant carry bag</figcaption></figure>
+        <figure><img src="/assets/optimized/dar-dyafa/goblet.jpg" alt="Dar Dyafa patterned takeaway coffee cup in hand" /><figcaption>Takeaway cup</figcaption></figure>
+        <figure><img src="/assets/optimized/dar-dyafa/fries-bag.jpg" alt="Dar Dyafa patterned fries bag" /><figcaption>Fries packaging</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -523,7 +529,7 @@ function DarDyafaPackagingPage() {
         <div className="section-label">Dieline library</div>
         <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section dar-final-grid"><div><div className="section-label">Restaurant takeaway</div><h2>A consistent Dar Dyafa presence from the kitchen to the customer's table.</h2></div><div className="dar-final-images"><img src="/assets/dar-dyafa/sandwich-bag.jpg" alt="Dar Dyafa patterned sandwich bag with bread" /><img src="/assets/dar-dyafa/goblet.jpg" alt="Dar Dyafa takeaway coffee cup held in hand" /></div></section>
+      <section className="ikea-section dar-final-grid"><div><div className="section-label">Restaurant takeaway</div><h2>A consistent Dar Dyafa presence from the kitchen to the customer's table.</h2></div><div className="dar-final-images"><img src="/assets/optimized/dar-dyafa/sandwich-bag.jpg" alt="Dar Dyafa patterned sandwich bag with bread" /><img src="/assets/optimized/dar-dyafa/goblet.jpg" alt="Dar Dyafa takeaway coffee cup held in hand" /></div></section>
       <footer className="site-footer"><span>{portfolio.name}</span><span>Dar Dyafa packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -531,9 +537,9 @@ function DarDyafaPackagingPage() {
 
 function RamPackagingPage() {
   const dielines = [
-    { title: "Beige napkin", preview: "/assets/ram/ram-beige-dieline.png", pdf: "/assets/ram/ram-beige.pdf" },
-    { title: "White napkin", preview: "/assets/ram/ram-white-dieline.png", pdf: "/assets/ram/ram-white.pdf" },
-    { title: "8 oz paper cup / color options", preview: "/assets/ram/ram-cup-colors-dieline.png", pdf: "/assets/ram/ram-cup-colors.pdf" },
+    { title: "Beige napkin", preview: "/assets/optimized/ram/ram-beige-dieline.jpg", pdf: "/assets/ram/ram-beige.pdf" },
+    { title: "White napkin", preview: "/assets/optimized/ram/ram-white-dieline.jpg", pdf: "/assets/ram/ram-white.pdf" },
+    { title: "8 oz paper cup / color options", preview: "/assets/optimized/ram/ram-cup-colors-dieline.jpg", pdf: "/assets/ram/ram-cup-colors.pdf" },
   ];
 
   return (
@@ -549,10 +555,10 @@ function RamPackagingPage() {
         <div className="ikea-meta-row"><span>Client / Royal Air Maroc</span><span>Context / Airline hospitality</span><span>Scope / 3 production files + 4 applications</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="ram-visual-grid">
-        <figure className="ram-hero-image"><img src="/assets/ram/cup-beige.jpg" alt="Royal Air Maroc beige 8 oz paper cup" /><figcaption>8 oz onboard cup</figcaption></figure>
-        <figure><img src="/assets/ram/napkin-red.jpg" alt="Royal Air Maroc red napkin packaging" /><figcaption>Red service variant</figcaption></figure>
-        <figure><img src="/assets/ram/napkin-beige.jpg" alt="Royal Air Maroc beige napkin packaging" /><figcaption>Beige service variant</figcaption></figure>
-        <figure><img src="/assets/ram/napkin-white.jpg" alt="Royal Air Maroc white napkin packaging" /><figcaption>White service variant</figcaption></figure>
+        <figure className="ram-hero-image"><img src="/assets/optimized/ram/cup-beige.jpg" alt="Royal Air Maroc beige 8 oz paper cup" /><figcaption>8 oz onboard cup</figcaption></figure>
+        <figure><img src="/assets/optimized/ram/napkin-red.jpg" alt="Royal Air Maroc red napkin packaging" /><figcaption>Red service variant</figcaption></figure>
+        <figure><img src="/assets/optimized/ram/napkin-beige.jpg" alt="Royal Air Maroc beige napkin packaging" /><figcaption>Beige service variant</figcaption></figure>
+        <figure><img src="/assets/optimized/ram/napkin-white.jpg" alt="Royal Air Maroc white napkin packaging" /><figcaption>White service variant</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -562,7 +568,7 @@ function RamPackagingPage() {
         <div className="section-label">Dieline library</div>
         <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section ram-final-grid"><div><div className="section-label">Onboard hospitality</div><h2>Small-format packaging that carries the airline identity into every service moment.</h2></div><div className="ram-final-images"><img src="/assets/ram/cup-beige.jpg" alt="Royal Air Maroc paper cup mockup" /><img src="/assets/ram/napkin-red.jpg" alt="Royal Air Maroc red napkin mockup" /></div></section>
+      <section className="ikea-section ram-final-grid"><div><div className="section-label">Onboard hospitality</div><h2>Small-format packaging that carries the airline identity into every service moment.</h2></div><div className="ram-final-images"><img src="/assets/optimized/ram/cup-beige.jpg" alt="Royal Air Maroc paper cup mockup" /><img src="/assets/optimized/ram/napkin-red.jpg" alt="Royal Air Maroc red napkin mockup" /></div></section>
       <footer className="site-footer"><span>{portfolio.name}</span><span>Royal Air Maroc packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -570,13 +576,13 @@ function RamPackagingPage() {
 
 function RoyaleMansourPackagingPage() {
   const dielines = [
-    { title: "Sandwich paper 32 × 32 cm", preview: "/assets/royale-mansour/sandwich-paper-dieline.png", pdf: "/assets/royale-mansour/sandwich-paper.pdf" },
-    { title: "Fries bag 7 × 9 cm", preview: "/assets/royale-mansour/fries-bag-dieline.png", pdf: "/assets/royale-mansour/fries-bag.pdf" },
-    { title: "Waffle box 15 × 20 × 5 cm", preview: "/assets/royale-mansour/waffle-box-dieline.png", pdf: "/assets/royale-mansour/waffle-box.pdf" },
-    { title: "Sandwich bag 13 × 9 × 3 cm", preview: "/assets/royale-mansour/sandwich-bag-dieline.png", pdf: "/assets/royale-mansour/sandwich-bag.pdf" },
-    { title: "Paper bowl 16 oz", preview: "/assets/royale-mansour/paper-bowl-dieline.png", pdf: "/assets/royale-mansour/paper-bowl.pdf" },
-    { title: "Burger box 145 × 145 mm", preview: "/assets/royale-mansour/burger-box-dieline.png", pdf: "/assets/royale-mansour/burger-box.pdf" },
-    { title: "Two-sided paper pouch", preview: "/assets/royale-mansour/pouch-dieline.png", pdf: "/assets/royale-mansour/pouch.pdf" },
+    { title: "Sandwich paper 32 × 32 cm", preview: "/assets/optimized/royale-mansour/sandwich-paper-dieline.jpg", pdf: "/assets/royale-mansour/sandwich-paper.pdf" },
+    { title: "Fries bag 7 × 9 cm", preview: "/assets/optimized/royale-mansour/fries-bag-dieline.jpg", pdf: "/assets/royale-mansour/fries-bag.pdf" },
+    { title: "Waffle box 15 × 20 × 5 cm", preview: "/assets/optimized/royale-mansour/waffle-box-dieline.jpg", pdf: "/assets/royale-mansour/waffle-box.pdf" },
+    { title: "Sandwich bag 13 × 9 × 3 cm", preview: "/assets/optimized/royale-mansour/sandwich-bag-dieline.jpg", pdf: "/assets/royale-mansour/sandwich-bag.pdf" },
+    { title: "Paper bowl 16 oz", preview: "/assets/optimized/royale-mansour/paper-bowl-dieline.jpg", pdf: "/assets/royale-mansour/paper-bowl.pdf" },
+    { title: "Burger box 145 × 145 mm", preview: "/assets/optimized/royale-mansour/burger-box-dieline.jpg", pdf: "/assets/royale-mansour/burger-box.pdf" },
+    { title: "Two-sided paper pouch", preview: "/assets/optimized/royale-mansour/pouch-dieline.jpg", pdf: "/assets/royale-mansour/pouch.pdf" },
   ];
 
   return (
@@ -592,10 +598,10 @@ function RoyaleMansourPackagingPage() {
         <div className="ikea-meta-row"><span>Client / Royale Mansour Morocco</span><span>Context / Luxury hotel food service</span><span>Scope / 7 dielines + 7 applications</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="royale-visual-grid">
-        <figure className="royale-hero-image"><img src="/assets/royale-mansour/paper-bowl.jpg" alt="Royale Mansour paper bowls with gold monogram" /><figcaption>Premium takeaway bowl</figcaption></figure>
-        <figure><img src="/assets/royale-mansour/burger-box.jpg" alt="Royale Mansour burger box mockup" /><figcaption>Burger box</figcaption></figure>
-        <figure><img src="/assets/royale-mansour/sandwich-paper.jpg" alt="Royale Mansour geometric sandwich paper" /><figcaption>Geometric food paper</figcaption></figure>
-        <figure><img src="/assets/royale-mansour/ice-cream-bowl.jpg" alt="Royale Mansour ice cream bowl mockup" /><figcaption>Ice cream service</figcaption></figure>
+        <figure className="royale-hero-image"><img src="/assets/optimized/royale-mansour/paper-bowl.jpg" alt="Royale Mansour paper bowls with gold monogram" /><figcaption>Premium takeaway bowl</figcaption></figure>
+        <figure><img src="/assets/optimized/royale-mansour/burger-box.jpg" alt="Royale Mansour burger box mockup" /><figcaption>Burger box</figcaption></figure>
+        <figure><img src="/assets/optimized/royale-mansour/sandwich-paper.jpg" alt="Royale Mansour geometric sandwich paper" /><figcaption>Geometric food paper</figcaption></figure>
+        <figure><img src="/assets/optimized/royale-mansour/ice-cream-bowl.jpg" alt="Royale Mansour ice cream bowl mockup" /><figcaption>Ice cream service</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -605,7 +611,7 @@ function RoyaleMansourPackagingPage() {
         <div className="section-label">Dieline library</div>
         <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section royale-final-grid"><div><div className="section-label">Luxury takeaway</div><h2>A consistent hotel presence across every food-service touchpoint.</h2></div><div className="royale-final-images"><img src="/assets/royale-mansour/waffle-box.jpg" alt="Royale Mansour waffle box mockup" /><img src="/assets/royale-mansour/sandwich-bag.jpg" alt="Royale Mansour pastry sandwich bag mockup" /></div></section>
+      <section className="ikea-section royale-final-grid"><div><div className="section-label">Luxury takeaway</div><h2>A consistent hotel presence across every food-service touchpoint.</h2></div><div className="royale-final-images"><img src="/assets/optimized/royale-mansour/waffle-box.jpg" alt="Royale Mansour waffle box mockup" /><img src="/assets/optimized/royale-mansour/sandwich-bag.jpg" alt="Royale Mansour pastry sandwich bag mockup" /></div></section>
       <footer className="site-footer"><span>{portfolio.name}</span><span>Royale Mansour packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -613,10 +619,10 @@ function RoyaleMansourPackagingPage() {
 
 function ChilisPackagingPage() {
   const dielines = [
-    { title: "Sandwich paper 32 × 32 cm", preview: "/assets/chilis/sandwich-paper-dieline.png", pdf: "/assets/chilis/sandwich-paper.pdf" },
-    { title: "Kraft carry bag", preview: "/assets/chilis/tote-bag-dieline.png", pdf: "/assets/chilis/tote-bag.pdf" },
-    { title: "Napkin 33 × 33 cm", preview: "/assets/chilis/napkin-dieline.png", pdf: "/assets/chilis/napkin.pdf" },
-    { title: "Sticker labels 5 cm + 3 cm", preview: "/assets/chilis/sticker-label-dieline.png", pdf: "/assets/chilis/sticker-label.pdf" },
+    { title: "Sandwich paper 32 × 32 cm", preview: "/assets/optimized/chilis/sandwich-paper-dieline.jpg", pdf: "/assets/chilis/sandwich-paper.pdf" },
+    { title: "Kraft carry bag", preview: "/assets/optimized/chilis/tote-bag-dieline.jpg", pdf: "/assets/chilis/tote-bag.pdf" },
+    { title: "Napkin 33 × 33 cm", preview: "/assets/optimized/chilis/napkin-dieline.jpg", pdf: "/assets/chilis/napkin.pdf" },
+    { title: "Sticker labels 5 cm + 3 cm", preview: "/assets/optimized/chilis/sticker-label-dieline.jpg", pdf: "/assets/chilis/sticker-label.pdf" },
   ];
 
   return (
@@ -632,10 +638,10 @@ function ChilisPackagingPage() {
         <div className="ikea-meta-row"><span>Client / Chili's</span><span>Context / Restaurant takeaway</span><span>Scope / 4 dielines + 5 applications</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="chilis-visual-grid">
-        <figure className="chilis-hero-image"><img src="/assets/chilis/burger-box.jpg" alt="Chili's burger box mockup with red interior" /><figcaption>Burger packaging</figcaption></figure>
-        <figure><img src="/assets/chilis/tote-bag.jpg" alt="Chili's kraft paper carry bag" /><figcaption>Carry bag</figcaption></figure>
-        <figure><img src="/assets/chilis/stickers.jpg" alt="Chili's sticker roll mockup" /><figcaption>Sealing stickers</figcaption></figure>
-        <figure><img src="/assets/chilis/napkin.jpg" alt="Chili's branded napkin mockup" /><figcaption>Table service</figcaption></figure>
+        <figure className="chilis-hero-image"><img src="/assets/optimized/chilis/burger-box.jpg" alt="Chili's burger box mockup with red interior" /><figcaption>Burger packaging</figcaption></figure>
+        <figure><img src="/assets/optimized/chilis/tote-bag.jpg" alt="Chili's kraft paper carry bag" /><figcaption>Carry bag</figcaption></figure>
+        <figure><img src="/assets/optimized/chilis/stickers.jpg" alt="Chili's sticker roll mockup" /><figcaption>Sealing stickers</figcaption></figure>
+        <figure><img src="/assets/optimized/chilis/napkin.jpg" alt="Chili's branded napkin mockup" /><figcaption>Table service</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -645,7 +651,7 @@ function ChilisPackagingPage() {
         <div className="section-label">Dieline library</div>
         <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section chilis-final-grid"><div><div className="section-label">Restaurant takeaway</div><h2>A clear, energetic identity across the full Chili's handoff.</h2></div><div className="chilis-final-images"><img src="/assets/chilis/sandwich-paper.jpg" alt="Chili's sandwich paper mockup" /><img src="/assets/chilis/tote-bag.jpg" alt="Chili's kraft carry bag mockup" /></div></section>
+      <section className="ikea-section chilis-final-grid"><div><div className="section-label">Restaurant takeaway</div><h2>A clear, energetic identity across the full Chili's handoff.</h2></div><div className="chilis-final-images"><img src="/assets/optimized/chilis/sandwich-paper.jpg" alt="Chili's sandwich paper mockup" /><img src="/assets/optimized/chilis/tote-bag.jpg" alt="Chili's kraft carry bag mockup" /></div></section>
       <footer className="site-footer"><span>{portfolio.name}</span><span>Chili's packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -653,8 +659,8 @@ function ChilisPackagingPage() {
 
 function HuaweiPackagingPage() {
   const dielines = [
-    { title: "4 oz paper cup", preview: "/assets/huawei/cup-4oz-dieline.png", pdf: "/assets/huawei/cup-4oz.pdf" },
-    { title: "Non-woven bag 33 × 30 × 12 cm", preview: "/assets/huawei/non-woven-bag-dieline.png", pdf: "/assets/huawei/non-woven-bag.pdf" },
+    { title: "4 oz paper cup", preview: "/assets/optimized/huawei/cup-4oz-dieline.jpg", pdf: "/assets/huawei/cup-4oz.pdf" },
+    { title: "Non-woven bag 33 × 30 × 12 cm", preview: "/assets/optimized/huawei/non-woven-bag-dieline.jpg", pdf: "/assets/huawei/non-woven-bag.pdf" },
   ];
 
   return (
@@ -670,8 +676,8 @@ function HuaweiPackagingPage() {
         <div className="ikea-meta-row"><span>Client / Huawei Northern Africa</span><span>Context / Corporate hospitality</span><span>Scope / 2 dielines + 2 applications</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="huawei-visual-grid">
-        <figure><img src="/assets/huawei/bag.jpg" alt="Huawei Northern Africa branded tote bags" /><figcaption>Event and hospitality tote</figcaption></figure>
-        <figure><img src="/assets/huawei/cup.jpg" alt="Huawei Northern Africa 4 oz paper coffee cup" /><figcaption>4 oz coffee cup</figcaption></figure>
+        <figure><img src="/assets/optimized/huawei/bag.jpg" alt="Huawei Northern Africa branded tote bags" /><figcaption>Event and hospitality tote</figcaption></figure>
+        <figure><img src="/assets/optimized/huawei/cup.jpg" alt="Huawei Northern Africa 4 oz paper coffee cup" /><figcaption>4 oz coffee cup</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -681,7 +687,7 @@ function HuaweiPackagingPage() {
         <div className="section-label">Dieline library</div>
         <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section huawei-final-grid"><div><div className="section-label">Corporate hospitality</div><h2>A precise identity system for small, useful brand touchpoints.</h2></div><div className="huawei-final-images"><img src="/assets/huawei/cup.jpg" alt="Huawei Northern Africa coffee cup mockup" /><img src="/assets/huawei/bag.jpg" alt="Huawei Northern Africa tote bag mockup" /></div></section>
+      <section className="ikea-section huawei-final-grid"><div><div className="section-label">Corporate hospitality</div><h2>A precise identity system for small, useful brand touchpoints.</h2></div><div className="huawei-final-images"><img src="/assets/optimized/huawei/cup.jpg" alt="Huawei Northern Africa coffee cup mockup" /><img src="/assets/optimized/huawei/bag.jpg" alt="Huawei Northern Africa tote bag mockup" /></div></section>
       <footer className="site-footer"><span>{portfolio.name}</span><span>Huawei packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -689,9 +695,9 @@ function HuaweiPackagingPage() {
 
 function DuneCremePackagingPage() {
   const dielines = [
-    { title: "Dune Crème packaging file", preview: "/assets/dune-creme/dune-creme-dieline.png", pdf: "/assets/dune-creme/dune-creme.pdf" },
-    { title: "Sugar sachet", preview: "/assets/dune-creme/sugar-sachet-dieline.png", pdf: "/assets/dune-creme/sugar-sachet.pdf" },
-    { title: "Napkin 30 × 30 cm", preview: "/assets/dune-creme/napkin-dieline.png", pdf: "/assets/dune-creme/napkin.pdf" },
+    { title: "Dune Crème packaging file", preview: "/assets/optimized/dune-creme/dune-creme-dieline.jpg", pdf: "/assets/dune-creme/dune-creme.pdf" },
+    { title: "Sugar sachet", preview: "/assets/optimized/dune-creme/sugar-sachet-dieline.jpg", pdf: "/assets/dune-creme/sugar-sachet.pdf" },
+    { title: "Napkin 30 × 30 cm", preview: "/assets/optimized/dune-creme/napkin-dieline.jpg", pdf: "/assets/dune-creme/napkin.pdf" },
   ];
 
   return (
@@ -707,9 +713,9 @@ function DuneCremePackagingPage() {
         <div className="ikea-meta-row"><span>Client / Dune Crème</span><span>Context / Bakery service</span><span>Scope / 3 dielines + 3 applications</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="dune-visual-grid">
-        <figure className="dune-hero-image"><img src="/assets/dune-creme/labels.jpg" alt="Dune Crème sticker label roll mockup" /><figcaption>Bakery label system</figcaption></figure>
-        <figure><img src="/assets/dune-creme/tote-bag.jpg" alt="Dune Crème kraft carry bag" /><figcaption>Kraft carry bag</figcaption></figure>
-        <figure><img src="/assets/dune-creme/napkin.jpg" alt="Dune Crème branded napkin at a table setting" /><figcaption>Table service</figcaption></figure>
+        <figure className="dune-hero-image"><img src="/assets/optimized/dune-creme/labels.jpg" alt="Dune Crème sticker label roll mockup" /><figcaption>Bakery label system</figcaption></figure>
+        <figure><img src="/assets/optimized/dune-creme/tote-bag.jpg" alt="Dune Crème kraft carry bag" /><figcaption>Kraft carry bag</figcaption></figure>
+        <figure><img src="/assets/optimized/dune-creme/napkin.jpg" alt="Dune Crème branded napkin at a table setting" /><figcaption>Table service</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -719,7 +725,7 @@ function DuneCremePackagingPage() {
         <div className="section-label">Dieline library</div>
         <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section dune-final-grid"><div><div className="section-label">Bakery takeaway</div><h2>A gentle visual language carried from the counter to the customer's hands.</h2></div><div className="dune-final-images"><img src="/assets/dune-creme/tote-bag.jpg" alt="Dune Crème kraft carry bag mockup" /><img src="/assets/dune-creme/labels.jpg" alt="Dune Crème label roll mockup" /></div></section>
+      <section className="ikea-section dune-final-grid"><div><div className="section-label">Bakery takeaway</div><h2>A gentle visual language carried from the counter to the customer's hands.</h2></div><div className="dune-final-images"><img src="/assets/optimized/dune-creme/tote-bag.jpg" alt="Dune Crème kraft carry bag mockup" /><img src="/assets/optimized/dune-creme/labels.jpg" alt="Dune Crème label roll mockup" /></div></section>
       <footer className="site-footer"><span>{portfolio.name}</span><span>Dune Crème packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -727,9 +733,9 @@ function DuneCremePackagingPage() {
 
 function QuincePackagingPage() {
   const dielines = [
-    { title: "4 oz paper cup", preview: "/assets/quince/cup-4oz-dieline.png", pdf: "/assets/quince/cup-4oz.pdf" },
-    { title: "8 oz paper cup", preview: "/assets/quince/cup-8oz-dieline.png", pdf: "/assets/quince/cup-8oz.pdf" },
-    { title: "12 oz paper cup", preview: "/assets/quince/cup-12oz-dieline.png", pdf: "/assets/quince/cup-12oz.pdf" },
+    { title: "4 oz paper cup", preview: "/assets/optimized/quince/cup-4oz-dieline.jpg", pdf: "/assets/quince/cup-4oz.pdf" },
+    { title: "8 oz paper cup", preview: "/assets/optimized/quince/cup-8oz-dieline.jpg", pdf: "/assets/quince/cup-8oz.pdf" },
+    { title: "12 oz paper cup", preview: "/assets/optimized/quince/cup-12oz-dieline.jpg", pdf: "/assets/quince/cup-12oz.pdf" },
   ];
 
   return (
@@ -745,7 +751,7 @@ function QuincePackagingPage() {
         <div className="ikea-meta-row"><span>Client / QUINCE Coffee and Chocolat</span><span>Context / Coffee service</span><span>Scope / 3 dielines + 1 application set</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="quince-visual-grid">
-        <figure><img src="/assets/quince/cups.jpg" alt="QUINCE Coffee and Chocolat paper cups in three sizes" /><figcaption>4 oz, 8 oz, and 12 oz cup family</figcaption></figure>
+        <figure><img src="/assets/optimized/quince/cups.jpg" alt="QUINCE Coffee and Chocolat paper cups in three sizes" /><figcaption>4 oz, 8 oz, and 12 oz cup family</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -755,7 +761,7 @@ function QuincePackagingPage() {
         <div className="section-label">Dieline library</div>
         <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section quince-final-grid"><div><div className="section-label">Coffee service</div><h2>A recognizable QUINCE moment at every cup size.</h2></div><img src="/assets/quince/cups.jpg" alt="QUINCE coffee cup application set" /></section>
+      <section className="ikea-section quince-final-grid"><div><div className="section-label">Coffee service</div><h2>A recognizable QUINCE moment at every cup size.</h2></div><img src="/assets/optimized/quince/cups.jpg" alt="QUINCE coffee cup application set" /></section>
       <footer className="site-footer"><span>{portfolio.name}</span><span>QUINCE packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -763,8 +769,8 @@ function QuincePackagingPage() {
 
 function KeatPackagingPage() {
   const dielines = [
-    { title: "Keat box / direction 1", preview: "/assets/keat/box-1-dieline.png", pdf: "/assets/keat/box-1.pdf" },
-    { title: "Keat box / direction 2", preview: "/assets/keat/box-2-dieline.png", pdf: "/assets/keat/box-2.pdf" },
+    { title: "Keat box / direction 1", preview: "/assets/optimized/keat/box-1-dieline.jpg", pdf: "/assets/keat/box-1.pdf" },
+    { title: "Keat box / direction 2", preview: "/assets/optimized/keat/box-2-dieline.jpg", pdf: "/assets/keat/box-2.pdf" },
   ];
 
   return (
@@ -780,7 +786,7 @@ function KeatPackagingPage() {
         <div className="ikea-meta-row"><span>Client / Keat</span><span>Context / Food packaging</span><span>Scope / 2 dielines + 2 material directions</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="keat-visual-grid">
-        <figure><img src="/assets/keat/boxes.jpg" alt="Keat food boxes in white and kraft material directions" /><figcaption>White and kraft directions</figcaption></figure>
+        <figure><img src="/assets/optimized/keat/boxes.jpg" alt="Keat food boxes in white and kraft material directions" /><figcaption>White and kraft directions</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -790,7 +796,7 @@ function KeatPackagingPage() {
         <div className="section-label">Dieline library</div>
         <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section keat-final-grid"><div><div className="section-label">Food box study</div><h2>A simple structure with two distinct material personalities.</h2></div><img src="/assets/keat/boxes.jpg" alt="Keat white and kraft food box mockups" /></section>
+      <section className="ikea-section keat-final-grid"><div><div className="section-label">Food box study</div><h2>A simple structure with two distinct material personalities.</h2></div><img src="/assets/optimized/keat/boxes.jpg" alt="Keat white and kraft food box mockups" /></section>
       <footer className="site-footer"><span>{portfolio.name}</span><span>Keat packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -798,14 +804,14 @@ function KeatPackagingPage() {
 
 function GastonGaliPrintPage() {
   const menus = [
-    { title: "Menu finale", note: "Main restaurant menu", mockup: "/assets/print-menus/gaston-gali-final-mockup.png", pdf: "/assets/print-menus/gaston-gali-menu-final.pdf" },
-    { title: "Menu Kids", note: "Children's menu direction", mockup: "/assets/print-menus/menu-kids-mockup.png", pdf: "/assets/print-menus/menu-kids.pdf" },
-    { title: "Menu Kidz", note: "Alternative kids menu format", mockup: "/assets/print-menus/menu-kidz-mockup.png", pdf: "/assets/print-menus/menu-kidz.pdf" },
-    { title: "Menu Gaston Gali", note: "Restaurant menu variant", mockup: "/assets/print-menus/gaston-gali-menu-mockup.png", pdf: "/assets/print-menus/menu-gaston-gali.pdf" },
-    { title: "Karty freezing bag", note: "Frozen food packaging print", mockup: "/assets/print-menus/karty-freezing-bag.jpg", pdf: "/assets/print-menus/karty-freezing-bag.pdf" },
-    { title: "Karty Sopalin ECO", note: "Kitchen paper roll packaging", mockup: "/assets/print-menus/sopalin/sopalin-eco.jpg", pdf: "/assets/print-menus/sopalin/sopalin-eco.pdf" },
-    { title: "Karty Sopalin JUMBO", note: "Toilet paper roll packaging", mockup: "/assets/print-menus/sopalin/sopalin-jumbo.jpg", pdf: "/assets/print-menus/sopalin/sopalin-jumbo.pdf" },
-    { title: "Karty Sopalin MAXI", note: "Kitchen paper roll packaging", mockup: "/assets/print-menus/sopalin/sopalin-maxi.jpg", pdf: "/assets/print-menus/sopalin/sopalin-maxi.pdf" },
+    { title: "Menu finale", note: "Main restaurant menu", mockup: "/assets/optimized/print-menus/gaston-gali-final-mockup.jpg", pdf: "/assets/print-menus/gaston-gali-menu-final.pdf" },
+    { title: "Menu Kids", note: "Children's menu direction", mockup: "/assets/optimized/print-menus/menu-kids-mockup.jpg", pdf: "/assets/print-menus/menu-kids.pdf" },
+    { title: "Menu Kidz", note: "Alternative kids menu format", mockup: "/assets/optimized/print-menus/menu-kidz-mockup.jpg", pdf: "/assets/print-menus/menu-kidz.pdf" },
+    { title: "Menu Gaston Gali", note: "Restaurant menu variant", mockup: "/assets/optimized/print-menus/gaston-gali-menu-mockup.jpg", pdf: "/assets/print-menus/menu-gaston-gali.pdf" },
+    { title: "Karty freezing bag", note: "Frozen food packaging print", mockup: "/assets/optimized/print-menus/karty-freezing-bag.jpg", pdf: "/assets/print-menus/karty-freezing-bag.pdf" },
+    { title: "Karty Sopalin ECO", note: "Kitchen paper roll packaging", mockup: "/assets/optimized/print-menus/sopalin/sopalin-eco.jpg", pdf: "/assets/print-menus/sopalin/sopalin-eco.pdf" },
+    { title: "Karty Sopalin JUMBO", note: "Toilet paper roll packaging", mockup: "/assets/optimized/print-menus/sopalin/sopalin-jumbo.jpg", pdf: "/assets/print-menus/sopalin/sopalin-jumbo.pdf" },
+    { title: "Karty Sopalin MAXI", note: "Kitchen paper roll packaging", mockup: "/assets/optimized/print-menus/sopalin/sopalin-maxi.jpg", pdf: "/assets/print-menus/sopalin/sopalin-maxi.pdf" },
   ];
 
   return (
@@ -837,10 +843,10 @@ function GastonGaliPrintPage() {
 
 function PhenixIdentityPage() {
   const assets = [
-    { title: "Business card", preview: "/assets/phenix/business-card-preview.png", pdf: "/assets/phenix/business-card.pdf" },
-    { title: "Letterhead", preview: "/assets/phenix/letterhead-preview.png", pdf: "/assets/phenix/letterhead.pdf" },
-    { title: "French brochure", preview: "/assets/phenix/brochure-fr-preview.png", pdf: "/assets/phenix/brochure-fr.pdf" },
-    { title: "Arabic brochure", preview: "/assets/phenix/brochure-ar-preview.png", pdf: "/assets/phenix/brochure-ar.pdf" },
+    { title: "Business card", preview: "/assets/optimized/phenix/business-card-preview.jpg", pdf: "/assets/phenix/business-card.pdf" },
+    { title: "Letterhead", preview: "/assets/optimized/phenix/letterhead-preview.jpg", pdf: "/assets/phenix/letterhead.pdf" },
+    { title: "French brochure", preview: "/assets/optimized/phenix/brochure-fr-preview.jpg", pdf: "/assets/phenix/brochure-fr.pdf" },
+    { title: "Arabic brochure", preview: "/assets/optimized/phenix/brochure-ar-preview.jpg", pdf: "/assets/phenix/brochure-ar.pdf" },
   ];
 
   return (
@@ -855,11 +861,11 @@ function PhenixIdentityPage() {
         </div>
         <div className="ikea-meta-row"><span>Client / Phenix Kitchen</span><span>Context / Restaurant identity</span><span>Scope / Logo + 4 brand assets</span><span>Role / Brand identity designer</span></div>
       </section>
-      <section className="phenix-hero-grid"><figure><img src="/assets/phenix/logo.jpg" alt="Phenix Kitchen phoenix logo" /><figcaption>Primary logo direction</figcaption></figure></section>
+      <section className="phenix-hero-grid"><figure><img src="/assets/optimized/phenix/logo.jpg" alt="Phenix Kitchen phoenix logo" /><figcaption>Primary logo direction</figcaption></figure></section>
       <section className="ikea-section">
         <div className="section-label">Identity in context</div>
         <div className="phenix-mockup-grid">
-          <figure><img src="/assets/phenix/identity-mockup.png" alt="Phenix Kitchen stationery and brochure mockup" /><figcaption>Stationery and brochure direction</figcaption></figure>
+          <figure><img src="/assets/optimized/phenix/identity-mockup.jpg" alt="Phenix Kitchen stationery and brochure mockup" /><figcaption>Stationery and brochure direction</figcaption></figure>
         </div>
       </section>
       <section className="ikea-section">
