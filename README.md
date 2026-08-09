@@ -1,6 +1,6 @@
 # Achraf Ouakrim Portfolio
 
-Single-page graphic-design portfolio for `achrafouakrim.com`, built with Vite, TypeScript, and GitHub Pages deployment.
+Single-page graphic-design portfolio for `achrafouakrim.com`, built with Vite, TypeScript, and Cloudflare Pages deployment.
 
 ## Local Development
 
@@ -14,20 +14,10 @@ Portfolio content lives in [src/portfolioData.ts](/Users/mac/Documents/ChatGPT/P
 
 ## Deployment
 
-The site deploys from `main` using [`.github/workflows/deploy.yml`](/Users/mac/Documents/ChatGPT/Portfolio/.github/workflows/deploy.yml). The custom domain is set by [public/CNAME](/Users/mac/Documents/ChatGPT/Portfolio/public/CNAME).
+The `main` branch is connected to the Cloudflare Pages project `achrafouakrim-portfolio`.
+Cloudflare builds with `npm run build` and publishes `dist`. The production domain is
+`https://achrafouakrim.com`, with `www` configured as a paired hostname.
 
-For `achrafouakrim.com`, configure DNS with your domain provider:
-
-- Apex `A` records:
-  - `185.199.108.153`
-  - `185.199.109.153`
-  - `185.199.110.153`
-  - `185.199.111.153`
-- Optional `AAAA` records:
-  - `2606:50c0:8000::153`
-  - `2606:50c0:8001::153`
-  - `2606:50c0:8002::153`
-  - `2606:50c0:8003::153`
-- `www` should point to the repository's GitHub Pages domain with a `CNAME` record.
-
-After DNS propagates, enable **Enforce HTTPS** in the repository's GitHub Pages settings.
+To publish an update, push a commit to `main`; Cloudflare Pages will build and deploy it
+automatically. The Cloudflare dashboard remains the place to manage the custom domain,
+DNS, redirects, and HTTPS.
