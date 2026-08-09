@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 825" role="img" aria-labelledby="title desc">
+  <title id="title">Packaging and brand identity placeholder</title>
+  <desc id="desc">Mockup of packaging boxes, color blocks, and logo marks.</desc>
+  <rect width="1200" height="825" fill="#111"/>
+  <rect x="98" y="92" width="1004" height="641" fill="#1b1a18" stroke="#f7f2e8" stroke-opacity=".16"/>
+  <rect x="172" y="164" width="270" height="390" fill="#f2d05c"/>
+  <path d="M172 164l78-64h270l-78 64z" fill="#4fd2c2"/>
+  <path d="M442 164l78-64v390l-78 64z" fill="#d9b94e"/>
+  <rect x="228" y="240" width="148" height="32" fill="#111"/>
+  <rect x="228" y="304" width="112" height="112" fill="#111" fill-opacity=".18"/>
+  <rect x="582" y="176" width="320" height="214" fill="#f7f2e8"/>
+  <path d="M626 238h220M626 292h150" stroke="#111" stroke-width="22"/>
+  <circle cx="742" cy="500" r="118" fill="#ff6f59"/>
+  <path d="M690 500h104M742 448v104" stroke="#111" stroke-width="20"/>
+  <rect x="856" y="464" width="134" height="134" fill="#4fd2c2"/>
+</svg>

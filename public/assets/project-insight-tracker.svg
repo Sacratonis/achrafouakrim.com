@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 825" role="img" aria-labelledby="title desc">
+  <title id="title">Vehicle wrap and social media placeholder</title>
+  <desc id="desc">Mockup of a vehicle wrap and social media design tiles.</desc>
+  <rect width="1200" height="825" fill="#111"/>
+  <rect x="82" y="92" width="1036" height="640" fill="#181713"/>
+  <rect x="150" y="472" width="560" height="126" rx="18" fill="#f7f2e8"/>
+  <path d="M230 472l86-104h274l120 104z" fill="#f2d05c"/>
+  <circle cx="270" cy="610" r="48" fill="#111"/>
+  <circle cx="596" cy="610" r="48" fill="#111"/>
+  <path d="M190 524h424" stroke="#111" stroke-width="26"/>
+  <rect x="780" y="142" width="248" height="248" fill="#4fd2c2"/>
+  <rect x="780" y="438" width="248" height="164" fill="#ff6f59"/>
+  <path d="M824 218h158M824 270h108M824 504h158M824 552h118" stroke="#111" stroke-width="20"/>
+  <rect x="150" y="164" width="342" height="112" fill="#23211d" stroke="#f7f2e8" stroke-opacity=".18"/>
+  <path d="M188 220h260" stroke="#f7f2e8" stroke-width="22"/>
+</svg>
