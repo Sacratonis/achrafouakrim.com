@@ -1,4 +1,4 @@
-import { StrictMode, useEffect, useRef, useState } from "react";
+import { StrictMode, useEffect, useRef, useState, type MouseEvent } from "react";
 import { createRoot } from "react-dom/client";
 import { ArrowUpRight, Download, Mail, MapPin, Phone } from "lucide-react";
 import { portfolio } from "./portfolioData";
@@ -151,10 +151,16 @@ function App() {
 }
 
 function Header() {
+  const scrollToContact = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.history.replaceState(null, "", "#contact");
+  };
+
   return (
     <header className="site-header">
       <a className="nav-pill" href="#top">Home</a>
-      <a className="nav-pill nav-connect" href="#contact">Connect <ArrowUpRight size={15} aria-hidden="true" /></a>
+      <a className="nav-pill nav-connect" href="#contact" onClick={scrollToContact}>Connect <ArrowUpRight size={15} aria-hidden="true" /></a>
       <a className="nav-pill" href={portfolio.resume.href} target="_blank" rel="noreferrer">CV</a>
     </header>
   );
