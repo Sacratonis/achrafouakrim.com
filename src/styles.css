@@ -563,16 +563,6 @@ h2 { font-size:clamp(35px, 4.4vw, 60px); line-height:.98; }
     grid-template-columns:1fr;
   }
   .poster-frame { flex-basis:min(76vw, 280px); height:min(112vw, 430px); }
-  .showcase-section,
-  .packaging-index,
-  .identity-index,
-  .print-index,
-  .vehicle-index,
-  .poster-archive,
-  .contact {
-    content-visibility:visible;
-    contain-intrinsic-size:auto;
-  }
 }
 
 @media (max-width:420px) {

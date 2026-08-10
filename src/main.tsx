@@ -63,7 +63,7 @@ function ShowcaseProjectCard({ project, index }: { project: ShowcaseProject; ind
           className="showcase-project-image"
           src={project.images[activeIndex].src}
           alt={project.images[activeIndex].alt}
-          loading={index === 0 ? "eager" : "lazy"}
+          loading="lazy"
           decoding="async"
         />
         <span className="showcase-project-count" aria-hidden="true">
