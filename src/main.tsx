@@ -287,6 +287,7 @@ function Experience() {
 
 function PosterArchive() {
   const posters = [...portfolio.posters, ...portfolio.posters];
+  const uniquePosterCount = portfolio.posters.length;
 
   return (
     <section className="poster-archive" id="poster-wall" aria-label="Animated posters and social media visuals">
@@ -296,12 +297,24 @@ function PosterArchive() {
       </div>
       <div className="poster-marquee">
         <div className="poster-track">
-          {posters.map((poster, index) => (
-            <a className="poster-frame" href="https://www.behance.net/achraf_ouak" target="_blank" rel="noreferrer" key={`${poster.title}-${index}`}>
-              <img src={poster.image} alt={poster.alt} loading="lazy" decoding="async" />
-              <span>{poster.title}</span>
-            </a>
-          ))}
+          {posters.map((poster, index) => {
+            const isDuplicate = index >= uniquePosterCount;
+
+            return (
+              <a
+                className="poster-frame"
+                href="https://www.behance.net/achraf_ouak"
+                target="_blank"
+                rel="noreferrer"
+                aria-hidden={isDuplicate ? "true" : undefined}
+                tabIndex={isDuplicate ? -1 : undefined}
+                key={`${poster.title}-${index}`}
+              >
+                <img src={poster.image} alt={poster.alt} loading={isDuplicate ? "lazy" : "eager"} decoding="async" />
+                <span>{poster.title}</span>
+              </a>
+            );
+          })}
         </div>
       </div>
     </section>
