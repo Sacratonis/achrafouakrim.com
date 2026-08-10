@@ -4,7 +4,7 @@
 * { box-sizing:border-box; }
 body { margin:0; min-width:320px; background:var(--bg); }
 a { color:inherit; text-decoration:none; }
-img { display:block; max-width:100%; }
+img, svg, video, canvas { display:block; max-width:100%; }
 .site-header { width:min(1138px, calc(100% - 48px)); margin:0 auto; padding:32px 0; display:flex; justify-content:space-between; align-items:center; }
 .nav-pill { min-width:103px; height:40px; padding:0 22px; display:inline-flex; align-items:center; justify-content:center; gap:4px; border-radius:10px; background:var(--card); color:var(--cream); font-size:14px; transition:transform .22s ease, background .22s ease; }
 .nav-pill:hover { transform:translateY(-2px); background:#222; }
@@ -17,6 +17,7 @@ img { display:block; max-width:100%; }
 .eyebrow, .section-label { color:var(--text); text-transform:uppercase; letter-spacing:.13em; font-size:12px; font-weight:700; }
 .eyebrow { margin:0 0 34px; color:var(--muted); }
 h1,h2,h3,p { margin-top:0; }
+h1, h2, h3, .contact-email, .packaging-project-title, .packaging-project-meta, .showcase-project-info span { overflow-wrap:anywhere; }
 h1,h2 { font-family:'Space Grotesk', Arial, sans-serif; font-weight:500; letter-spacing:-.045em; }
 h1 { max-width:720px; margin-bottom:22px; font-size:clamp(47px, 6.2vw, 83px); line-height:.95; text-transform:uppercase; }
 .hero-summary { max-width:540px; margin:0; color:var(--text); font-size:16px; line-height:1.32; }
@@ -26,7 +27,7 @@ h1 { max-width:720px; margin-bottom:22px; font-size:clamp(47px, 6.2vw, 83px); li
 .social-mark-text { font-size:15px; font-weight:700; letter-spacing:-.08em; }
 .portrait-card { position:relative; overflow:hidden; min-height:447px; background:#1a1919; }
 .portrait-card img { width:100%; height:100%; min-height:447px; object-fit:cover; object-position:center; mix-blend-mode:normal; }
-.hello-badge { position:absolute; z-index:1; top:72px; left:50%; transform:translateX(-50%); white-space:nowrap; padding:8px 14px; border:1px dashed var(--text); border-radius:999px; color:#151515; background:var(--text); font-size:14px; }
+.hello-badge { position:absolute; z-index:1; top:72px; left:50%; max-width:calc(100% - 32px); transform:translateX(-50%); white-space:nowrap; text-align:center; padding:8px 14px; border:1px dashed var(--text); border-radius:999px; color:#151515; background:var(--text); font-size:14px; }
 .portrait-location { position:absolute; left:18px; bottom:18px; display:inline-flex; gap:5px; align-items:center; padding:8px 11px; border-radius:999px; background:rgba(0,0,0,.7); color:var(--cream); font-size:12px; }
 .section { padding:78px 0 0; }
 .section-label { padding-bottom:19px; border-bottom:1px solid var(--line); }
@@ -92,7 +93,9 @@ h2 { font-size:clamp(35px, 4.4vw, 60px); line-height:.98; }
 .poster-archive-heading .section-label { border:0; padding:0; color:var(--text); }
 .poster-marquee { overflow:hidden; padding:0 0 4px; }
 .poster-track { display:flex; align-items:center; gap:20px; width:max-content; animation:poster-scroll 52s linear infinite; }
-.poster-track:hover { animation-play-state:paused; }
+@media (hover:hover) {
+  .poster-track:hover { animation-play-state:paused; }
+}
 .poster-frame { position:relative; flex:0 0 clamp(230px, 25vw, 350px); height:clamp(360px, 40vw, 520px); display:flex; align-items:center; justify-content:center; overflow:hidden; border-radius:15px; background:var(--card); }
 .poster-frame img { width:100%; height:100%; object-fit:contain; transition:transform .4s ease; }
 .poster-frame:hover img { transform:scale(1.025); }
@@ -404,6 +407,9 @@ h2 { font-size:clamp(35px, 4.4vw, 60px); line-height:.98; }
   .contact { margin-top:100px; padding-bottom:70px; }
   .poster-archive { padding-top:100px; }
   .poster-archive-heading { width:min(100% - 28px, 560px); }
+  .poster-marquee { overflow:hidden; scrollbar-width:none; }
+  .poster-marquee::-webkit-scrollbar { display:none; }
+  .poster-track { animation:poster-scroll 42s linear infinite; padding:0; }
   .poster-frame { flex-basis:245px; height:370px; }
   .packaging-preview { width:min(100% - 28px, 560px); margin-top:100px; }
   .packaging-preview-intro, .packaging-detail-grid { grid-template-columns:1fr; gap:26px; }
@@ -501,4 +507,164 @@ h2 { font-size:clamp(35px, 4.4vw, 60px); line-height:.98; }
   .vehicle-final-grid { grid-template-columns:1fr; gap:20px; }
   .contact-email { font-size:clamp(16px, 5vw, 22px); }
   .site-footer { gap:8px; flex-wrap:wrap; }
+}
+
+@media (max-width:520px) {
+  .showcase-project-grid-packaging { grid-template-columns:1fr; gap:12px; }
+  .showcase-project-grid-packaging .showcase-project-card { padding:10px; }
+  .showcase-project-grid-packaging .showcase-project-info h3 { font-size:22px; }
+  .showcase-project-grid-packaging .showcase-project-info span { font-size:11px; }
+  .showcase-project-grid-packaging .showcase-project-scope { display:block; }
+  .ikea-visual-grid,
+  .miam-visual-grid,
+  .cafe-visual-grid,
+  .dar-visual-grid,
+  .ram-visual-grid,
+  .royale-visual-grid,
+  .chilis-visual-grid,
+  .dune-visual-grid {
+    grid-template-columns:1fr;
+    grid-template-rows:auto;
+    gap:12px;
+  }
+  .ikea-visual-grid figure:first-child,
+  .miam-visual-grid figure:first-child,
+  .cafe-visual-grid figure:first-child,
+  .dar-visual-grid figure:first-child,
+  .ram-visual-grid figure:first-child,
+  .royale-visual-grid figure:first-child,
+  .chilis-visual-grid figure:first-child,
+  .dune-visual-grid figure:first-child {
+    grid-row:auto;
+  }
+  .ikea-visual-grid img,
+  .miam-visual-grid img,
+  .cafe-visual-grid img,
+  .dar-visual-grid img,
+  .ram-visual-grid img,
+  .royale-visual-grid img,
+  .chilis-visual-grid img,
+  .dune-visual-grid img,
+  .huawei-visual-grid img,
+  .quince-visual-grid img,
+  .keat-visual-grid img,
+  .print-mockup-grid img,
+  .vehicle-visual-grid img,
+  .phenix-hero-grid img {
+    height:auto;
+    min-height:230px;
+    aspect-ratio:1.2;
+  }
+  .ikea-process,
+  .ikea-dieline-grid,
+  .packaging-process,
+  .phenix-asset-grid,
+  .print-asset-grid {
+    grid-template-columns:1fr;
+  }
+  .poster-frame { flex-basis:min(76vw, 280px); height:min(112vw, 430px); }
+  .showcase-section,
+  .packaging-index,
+  .identity-index,
+  .print-index,
+  .vehicle-index,
+  .poster-archive,
+  .contact {
+    content-visibility:visible;
+    contain-intrinsic-size:auto;
+  }
+}
+
+@media (max-width:420px) {
+  .site-header,
+  .hero,
+  .section,
+  .showcase,
+  .contact,
+  .site-footer,
+  .packaging-preview,
+  .packaging-index,
+  .identity-index,
+  .print-index,
+  .vehicle-index,
+  .project-page-shell,
+  .ikea-visual-grid,
+  .miam-visual-grid,
+  .cafe-visual-grid,
+  .dar-visual-grid,
+  .ram-visual-grid,
+  .royale-visual-grid,
+  .chilis-visual-grid,
+  .huawei-visual-grid,
+  .dune-visual-grid,
+  .quince-visual-grid,
+  .keat-visual-grid,
+  .phenix-hero-grid,
+  .phenix-mockup-grid,
+  .print-mockup-grid,
+  .vehicle-visual-grid,
+  .ikea-section {
+    width:calc(100% - 24px);
+  }
+  .site-header { gap:6px; justify-content:space-between; padding:18px 0 14px; overflow:visible; }
+  .nav-pill { min-width:0; height:34px; padding:0 10px; border-radius:8px; font-size:12px; }
+  .nav-connect { min-width:0; }
+  .hero-intro { padding:28px 18px 22px; border-radius:12px; }
+  h1 { font-size:clamp(36px, 12vw, 50px); line-height:.98; }
+  h2,
+  .showcase-section-heading h2,
+  .packaging-index-intro h2,
+  .identity-index-intro h2,
+  .print-index-intro h2,
+  .vehicle-index-intro h2,
+  .packaging-preview-copy h2 {
+    font-size:clamp(30px, 9.5vw, 40px);
+    line-height:1;
+  }
+  .hero-summary,
+  .about-copy p,
+  .contact-details p,
+  .project-page-heading > p:not(.preview-kicker) {
+    font-size:16px;
+    line-height:1.45;
+  }
+  .social-row { position:relative; left:auto; bottom:auto; max-width:100%; margin-top:26px; gap:10px; }
+  .round-link { width:46px; height:46px; }
+  .portrait-card, .portrait-card img { min-height:330px; }
+  .hello-badge { top:22px; max-width:calc(100% - 28px); white-space:normal; }
+  .about,
+  .experience,
+  .poster-archive,
+  .showcase,
+  .packaging-preview,
+  .packaging-index,
+  .identity-index,
+  .print-index,
+  .vehicle-index,
+  .ikea-section {
+    padding-top:0;
+    margin-top:78px;
+  }
+  .showcase-section + .showcase-section { margin-top:54px; }
+  .experience-row { grid-template-columns:1fr; gap:7px; padding:18px 0; }
+  .education-line { display:grid; gap:8px; }
+  .project-page-heading { padding-top:34px; }
+  .project-page-heading h1 { font-size:clamp(38px, 12vw, 54px); }
+  .ikea-meta-row { gap:8px; margin-top:32px; }
+  .ikea-meta-row span { flex-basis:100%; }
+  .contact { margin-top:78px; padding-bottom:64px; }
+  .contact-email { display:inline; line-height:1.5; }
+  .contact-socials { display:grid; grid-template-columns:1fr 1fr; width:100%; }
+  .contact-socials a { min-height:44px; align-items:center; }
+  .site-footer { align-items:flex-start; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  *, *::before, *::after {
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    scroll-behavior:auto !important;
+    transition-duration:.001ms !important;
+  }
+  .poster-track { animation:none; }
 }
