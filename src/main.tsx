@@ -1,6 +1,6 @@
-import { StrictMode, useEffect, useRef, useState, type MouseEvent } from "react";
+import { StrictMode, useCallback, useEffect, useRef, useState, type ComponentProps, type MouseEvent } from "react";
 import { createRoot } from "react-dom/client";
-import { ArrowUpRight, Download, Dribbble, Instagram, Linkedin, Mail, MapPin } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Download, Dribbble, Instagram, Linkedin, Mail, MapPin, Pause, Play } from "lucide-react";
 import { portfolio } from "./portfolioData";
 import "./styles.css";
 
@@ -15,6 +15,10 @@ type ShowcaseProject = {
   external?: boolean;
 };
 
+function ProjectImage({ loading = "lazy", decoding = "async", ...props }: ComponentProps<"img">) {
+  return <img {...props} loading={loading} decoding={decoding} />;
+}
+
 function SocialMark({ label }: { label: string }) {
   if (label === "Instagram") return <Instagram size={17} aria-hidden="true" />;
   if (label === "LinkedIn") return <Linkedin size={17} aria-hidden="true" />;
@@ -24,29 +28,70 @@ function SocialMark({ label }: { label: string }) {
 
 function ShowcaseProjectCard({ project, index }: { project: ShowcaseProject; index: number }) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [touchMode, setTouchMode] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
   const timerRef = useRef<number | null>(null);
+  const cardRef = useRef<HTMLAnchorElement | null>(null);
 
-  const stopPreview = () => {
+  const clearPreviewTimer = useCallback(() => {
     if (timerRef.current !== null) {
       window.clearInterval(timerRef.current);
       timerRef.current = null;
     }
-    setActiveIndex(0);
-  };
+  }, []);
 
-  const startPreview = () => {
+  const stopPreview = useCallback(() => {
+    clearPreviewTimer();
+    setActiveIndex(0);
+  }, [clearPreviewTimer]);
+
+  const startPreview = useCallback(() => {
     if (project.images.length < 2 || timerRef.current !== null) return;
     timerRef.current = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % project.images.length);
     }, 820);
-  };
+  }, [project.images.length]);
 
-  useEffect(() => () => {
-    if (timerRef.current !== null) window.clearInterval(timerRef.current);
+  useEffect(() => {
+    const query = window.matchMedia("(hover: none), (pointer: coarse)");
+    const update = () => setTouchMode(query.matches);
+    update();
+    query.addEventListener?.("change", update);
+    return () => query.removeEventListener?.("change", update);
   }, []);
+
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduceMotion(query.matches);
+    update();
+    query.addEventListener?.("change", update);
+    return () => query.removeEventListener?.("change", update);
+  }, []);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    const observer = new IntersectionObserver(([entry]) => setIsVisible(entry.isIntersecting), { threshold: 0.35 });
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!touchMode || !isVisible || reduceMotion) {
+      clearPreviewTimer();
+      if (touchMode && (!isVisible || reduceMotion)) setActiveIndex(0);
+      return;
+    }
+    startPreview();
+    return clearPreviewTimer;
+  }, [clearPreviewTimer, isVisible, reduceMotion, startPreview, touchMode]);
+
+  useEffect(() => () => clearPreviewTimer(), [clearPreviewTimer]);
 
   return (
     <a
+      ref={cardRef}
       className="showcase-project-card"
       href={project.href}
       target={project.external ? "_blank" : undefined}
@@ -58,8 +103,7 @@ function ShowcaseProjectCard({ project, index }: { project: ShowcaseProject; ind
     >
       <div className="showcase-project-media">
         <span className="showcase-project-index">0{index + 1}</span>
-        <img
-          key={`${project.slug}-${activeIndex}`}
+        <ProjectImage
           className="showcase-project-image"
           src={project.images[activeIndex].src}
           alt={project.images[activeIndex].alt}
@@ -82,13 +126,82 @@ function ShowcaseProjectCard({ project, index }: { project: ShowcaseProject; ind
   );
 }
 
+function ProjectBackLink({ href }: { href: string }) {
+  return <a className="project-back" href={href}><ArrowLeft size={15} aria-hidden="true" /> Back to portfolio</a>;
+}
+
 function App() {
+  useEffect(() => {
+    const route = window.location.pathname.replace(/\/$/, "") || "/";
+    const homeTitle = "Achraf Ouakrim | Graphic Designer & Vibecoder";
+    const homeDescription = "Achraf Ouakrim is a graphic designer and vibecoder based in Morocco, creating brand identities, packaging, print, visual campaigns, and digital experiences.";
+    const project = portfolio.showcaseSections
+      .flatMap((section) => section.projects)
+      .find((item) => item.href === route);
+
+    if (!project) return;
+
+    const projectTitle = `${project.title} | Achraf Ouakrim`;
+    const projectDescription = `${project.meta}. ${project.scope}. A selected project by Achraf Ouakrim.`;
+    const projectImage = new URL(project.images[0]?.src ?? "/assets/optimized/achraf-portrait-vector.jpg", window.location.origin).href;
+    const setMeta = (selector: string, content: string) => document.querySelector(selector)?.setAttribute("content", content);
+
+    document.title = projectTitle;
+    setMeta('meta[name="description"]', projectDescription);
+    setMeta('meta[property="og:title"]', projectTitle);
+    setMeta('meta[property="og:description"]', projectDescription);
+    setMeta('meta[property="og:url"]', `https://achrafouakrim.com${route}`);
+    setMeta('meta[property="og:image"]', projectImage);
+    setMeta('meta[property="og:image:alt"]', project.images[0]?.alt ?? project.title);
+    setMeta('meta[name="twitter:title"]', projectTitle);
+    setMeta('meta[name="twitter:description"]', projectDescription);
+    setMeta('meta[name="twitter:image"]', projectImage);
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", `https://achrafouakrim.com${route}`);
+
+    return () => {
+      document.title = homeTitle;
+      setMeta('meta[name="description"]', homeDescription);
+      setMeta('meta[property="og:title"]', homeTitle);
+      setMeta('meta[property="og:description"]', "Brand identity, packaging, print, visual campaigns, and thoughtful digital experiences by Achraf Ouakrim.");
+      setMeta('meta[property="og:url"]', "https://achrafouakrim.com/");
+      setMeta('meta[property="og:image"]', "https://achrafouakrim.com/assets/optimized/achraf-portrait-vector.jpg");
+      setMeta('meta[property="og:image:alt"]', "Portrait of Achraf Ouakrim");
+      setMeta('meta[name="twitter:title"]', homeTitle);
+      setMeta('meta[name="twitter:description"]', "Brand identity, packaging, print, visual campaigns, and thoughtful digital experiences by Achraf Ouakrim.");
+      setMeta('meta[name="twitter:image"]', "https://achrafouakrim.com/assets/optimized/achraf-portrait-vector.jpg");
+      document.querySelector('link[rel="canonical"]')?.setAttribute("href", "https://achrafouakrim.com/");
+    };
+  }, []);
+
+  useEffect(() => {
+    if (window.location.hash !== "#contact") return;
+    const scrollToContact = () => {
+      document.getElementById("contact")?.scrollIntoView({ behavior: "auto", block: "start" });
+    };
+    const firstFrame = window.requestAnimationFrame(scrollToContact);
+    const retry = window.setTimeout(scrollToContact, 350);
+    const finalRetry = window.setTimeout(scrollToContact, 1000);
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      window.clearTimeout(retry);
+      window.clearTimeout(finalRetry);
+    };
+  }, []);
+
   if (window.location.pathname === "/work/phenix-kitchen-identity") {
     return <PhenixIdentityPage />;
   }
 
   if (window.location.pathname === "/work/gaston-gali-menu-print") {
     return <GastonGaliPrintPage />;
+  }
+
+  if (window.location.pathname === "/work/karty-freezing-bag-print") {
+    return <KartyFreezingBagPrintPage />;
+  }
+
+  if (window.location.pathname === "/work/sopalin-print-range") {
+    return <SopalinPrintPage />;
   }
 
   if (window.location.pathname === "/work/kara-renault-vehicle-wrap") {
@@ -140,7 +253,7 @@ function App() {
   }
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <Header />
       <Hero />
       <About />
@@ -158,16 +271,24 @@ function App() {
 }
 
 function Header() {
+  const isHome = window.location.pathname === "/";
   const scrollToContact = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (!isHome) return;
     event.preventDefault();
-    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" });
     window.history.replaceState(null, "", "#contact");
+    const target = document.getElementById("contact");
+    if (!target) return;
+    window.requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.setTimeout(() => target.scrollIntoView({ behavior: "auto", block: "start" }), 500);
+    });
   };
 
   return (
     <header className="site-header">
-      <a className="nav-pill" href="#top">Home</a>
-      <a className="nav-pill nav-connect" href="#contact" onClick={scrollToContact}>Connect <ArrowUpRight size={15} aria-hidden="true" /></a>
+      <a className="skip-link" href="#main-content">Skip to content</a>
+      <a className="nav-pill" href={isHome ? "#top" : "/"}>Home</a>
+      <a className="nav-pill nav-connect" href={isHome ? "#contact" : "/#contact"} onClick={isHome ? scrollToContact : undefined}>Connect <ArrowUpRight size={15} aria-hidden="true" /></a>
       <a className="nav-pill" href={portfolio.resume.href} target="_blank" rel="noreferrer">CV</a>
     </header>
   );
@@ -178,7 +299,7 @@ function Hero() {
     <section className="hero" id="top">
       <div className="hero-intro reveal">
         <p className="eyebrow">{portfolio.role}</p>
-        <h1>Graphic designer<br />based in Morocco</h1>
+        <h1>Graphic designer<br />&amp; vibecoder<br />based in Morocco</h1>
         <p className="hero-summary">{portfolio.summary}</p>
       <div className="social-row" aria-label="Contact links">
         <a className="round-link" href={`mailto:${portfolio.email}`} aria-label="Email Achraf" title="Email Achraf"><Mail size={17} /></a>
@@ -192,9 +313,11 @@ function Hero() {
       </div>
       <div className="portrait-card reveal">
         <div className="hello-badge">✦ Hey there! I’m Achraf</div>
-        <img
+        <ProjectImage
           src={portfolio.headshot}
           alt={portfolio.headshotAlt}
+          width="1162"
+          height="1353"
           loading="eager"
           fetchPriority="high"
           decoding="async"
@@ -207,9 +330,9 @@ function Hero() {
 
 function Work() {
   return (
-    <section className="showcase" id="work">
+    <section className="showcase" id="work" aria-labelledby="work-heading">
       <div className="showcase-header">
-        <div className="section-label">Work showcase</div>
+        <h2 className="section-label" id="work-heading">Work showcase</h2>
         <p>Selected projects across identity, packaging, print, vehicles, and social visuals.</p>
       </div>
       {portfolio.showcaseSections.filter((section) => section.id !== "posters").map((section) => (
@@ -234,9 +357,9 @@ function Work() {
 
 function IdentityIndex() {
   return (
-    <section className="identity-index" id="identity" aria-label="Brand identity projects">
+    <section className="identity-index" id="identity" aria-labelledby="identity-heading">
       <div className="section-label">Brand identity</div>
-      <div className="identity-index-intro"><h2>Identity systems that make a business recognizable.</h2><p>Explore the thinking, core assets, and applications behind each brand.</p></div>
+      <div className="identity-index-intro"><h2 id="identity-heading">Identity systems that make a business recognizable.</h2><p>Explore the thinking, core assets, and applications behind each brand.</p></div>
       {portfolio.identityProjects.map((project, index) => <a className="packaging-project-row" href={`/work/${project.slug}`} key={project.slug}><span className="packaging-project-number">0{index + 1}</span><span className="packaging-project-title">{project.title}</span><span className="packaging-project-meta">{project.meta}</span><ArrowUpRight size={21} aria-hidden="true" /></a>)}
     </section>
   );
@@ -244,9 +367,9 @@ function IdentityIndex() {
 
 function PrintIndex() {
   return (
-    <section className="print-index" id="print" aria-label="Print design projects">
+    <section className="print-index" id="print" aria-labelledby="print-heading">
       <div className="section-label">Print design</div>
-      <div className="print-index-intro"><h2>Print pieces designed to be held, read, and remembered.</h2><p>Menus and printed systems with clear hierarchy, audience awareness, and production-ready files.</p></div>
+      <div className="print-index-intro"><h2 id="print-heading">Print pieces designed to be held, read, and remembered.</h2><p>Menus and printed systems with clear hierarchy, audience awareness, and production-ready files.</p></div>
       {portfolio.printProjects.map((project, index) => <a className="packaging-project-row" href={`/work/${project.slug}`} key={project.slug}><span className="packaging-project-number">0{index + 1}</span><span className="packaging-project-title">{project.title}</span><span className="packaging-project-meta">{project.meta}</span><ArrowUpRight size={21} aria-hidden="true" /></a>)}
     </section>
   );
@@ -254,8 +377,8 @@ function PrintIndex() {
 
 function About() {
   return (
-    <section className="section about" id="about">
-      <div className="section-label">About me</div>
+    <section className="section about" id="about" aria-labelledby="about-heading">
+      <div className="section-label" id="about-heading">About me</div>
       <div className="about-grid">
         <h2>{portfolio.about.title}</h2>
         <div className="about-copy">
@@ -269,8 +392,8 @@ function About() {
 
 function Experience() {
   return (
-    <section className="section experience" id="experience">
-      <div className="section-label">Experience</div>
+    <section className="section experience" id="experience" aria-labelledby="experience-heading">
+      <div className="section-label" id="experience-heading">Experience</div>
       <div className="experience-list">
         {portfolio.experience.map((item) => (
           <article className="experience-row" key={`${item.company}-${item.period}`}>
@@ -288,15 +411,28 @@ function Experience() {
 function PosterArchive() {
   const posters = [...portfolio.posters, ...portfolio.posters];
   const uniquePosterCount = portfolio.posters.length;
+  const [isPaused, setIsPaused] = useState(false);
 
   return (
-    <section className="poster-archive" id="poster-wall" aria-label="Animated posters and social media visuals">
+    <section className="poster-archive" id="poster-wall" aria-labelledby="poster-heading">
       <div className="poster-archive-heading">
-        <span className="section-label">Animated posters</span>
-        <span>Social media visuals / poster archive</span>
+        <h2 className="section-label" id="poster-heading">Animated posters</h2>
+        <div className="poster-archive-controls">
+          <span>Social media visuals / poster archive</span>
+          <button
+            className="poster-motion-toggle"
+            type="button"
+            onClick={() => setIsPaused((current) => !current)}
+            aria-label={isPaused ? "Play poster motion" : "Pause poster motion"}
+            aria-pressed={isPaused}
+            title={isPaused ? "Play poster motion" : "Pause poster motion"}
+          >
+            {isPaused ? <Play size={15} aria-hidden="true" /> : <Pause size={15} aria-hidden="true" />}
+          </button>
+        </div>
       </div>
       <div className="poster-marquee">
-        <div className="poster-track">
+        <div className={`poster-track${isPaused ? " is-paused" : ""}`}>
           {posters.map((poster, index) => {
             const isDuplicate = index >= uniquePosterCount;
 
@@ -310,7 +446,7 @@ function PosterArchive() {
                 tabIndex={isDuplicate ? -1 : undefined}
                 key={`${poster.title}-${index}`}
               >
-                <img src={poster.image} alt={poster.alt} loading={isDuplicate ? "lazy" : "eager"} decoding="async" />
+                <ProjectImage src={poster.image} alt={poster.alt} loading="lazy" decoding="async" />
                 <span>{poster.title}</span>
               </a>
             );
@@ -323,10 +459,10 @@ function PosterArchive() {
 
 function PackagingIndex() {
   return (
-    <section className="packaging-index" id="packaging" aria-label="Packaging projects">
+    <section className="packaging-index" id="packaging" aria-labelledby="packaging-heading">
       <div className="section-label">Packaging</div>
       <div className="packaging-index-intro">
-        <h2>B2B packaging from supplied identity to production.</h2>
+        <h2 id="packaging-heading">B2B packaging from supplied identity to production.</h2>
         <p>Explore packaging projects with the full process kept on their own pages.</p>
       </div>
       {portfolio.packagingProjects.map((project, index) => (
@@ -343,10 +479,10 @@ function PackagingIndex() {
 
 function VehicleWrappingIndex() {
   return (
-    <section className="vehicle-index" id="vehicle-wrapping" aria-label="Vehicle wrapping projects">
+    <section className="vehicle-index" id="vehicle-wrapping" aria-labelledby="vehicle-heading">
       <div className="section-label">Vehicle wrapping</div>
       <div className="vehicle-index-intro">
-        <h2>Brand systems that move through the city.</h2>
+        <h2 id="vehicle-heading">Brand systems that move through the city.</h2>
         <p>Large-format applications designed to stay legible, recognizable, and useful from every angle.</p>
       </div>
       {portfolio.vehicleWrappingProjects.map((project, index) => (
@@ -363,10 +499,10 @@ function VehicleWrappingIndex() {
 
 function KaraRenaultVehicleWrapPage() {
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <Header />
       <section className="project-page-shell vehicle-project-shell">
-        <a className="project-back" href="/#vehicle-wrapping"><ArrowUpRight size={15} /> Back to portfolio</a>
+        <ProjectBackLink href="/#vehicle-wrapping" />
         <div className="project-page-heading">
           <p className="preview-kicker">Vehicle wrapping / KARA Distribution</p>
           <h1>A moving identity for KARA Distribution.</h1>
@@ -375,8 +511,8 @@ function KaraRenaultVehicleWrapPage() {
         <div className="ikea-meta-row"><span>Client / KARA Distribution</span><span>Context / Delivery fleet</span><span>Scope / 2 vehicle views</span><span>Role / Vehicle graphics designer</span></div>
       </section>
       <section className="vehicle-visual-grid">
-        <figure><img src="/assets/optimized/vehicle-wrapping/kara-renault-front.jpg" alt="KARA Distribution Renault van wrap front and side view" /><figcaption><strong>Front and side application</strong><span>Brand visibility in motion</span></figcaption></figure>
-        <figure><img src="/assets/optimized/vehicle-wrapping/kara-renault-rear.jpg" alt="KARA Distribution Renault van wrap rear view" /><figcaption><strong>Rear application</strong><span>Contact details at the point of delivery</span></figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/vehicle-wrapping/kara-renault-front.jpg" alt="KARA Distribution Renault van wrap front and side view" /><figcaption><strong>Front and side application</strong><span>Brand visibility in motion</span></figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/vehicle-wrapping/kara-renault-rear.jpg" alt="KARA Distribution Renault van wrap rear view" /><figcaption><strong>Rear application</strong><span>Contact details at the point of delivery</span></figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Wrap system</div>
@@ -389,8 +525,9 @@ function KaraRenaultVehicleWrapPage() {
       </section>
       <section className="ikea-section vehicle-final-grid">
         <div><div className="section-label">Fleet presence</div><h2>One vehicle, several brand impressions.</h2><p>Vehicle wrapping extends a business identity beyond the storefront, turning everyday movement into repeated local visibility.</p></div>
-        <img src="/assets/optimized/vehicle-wrapping/kara-renault-front.jpg" alt="KARA Distribution branded Renault delivery van" />
+        <ProjectImage src="/assets/optimized/vehicle-wrapping/kara-renault-front.jpg" alt="KARA Distribution branded Renault delivery van" />
       </section>
+      <ProjectContactCta />
       <footer className="site-footer"><span>{portfolio.name}</span><span>KARA vehicle wrapping</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -407,10 +544,10 @@ function IkeaPackagingPage() {
   ];
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <Header />
       <section className="project-page-shell ikea-project-shell">
-        <a className="project-back" href="/#packaging"><ArrowUpRight size={15} /> Back to portfolio</a>
+        <ProjectBackLink href="/#packaging" />
         <div className="project-page-heading">
           <p className="preview-kicker">B2B packaging / IKEA Morocco</p>
           <h1>Casablanca food packaging system.</h1>
@@ -419,10 +556,10 @@ function IkeaPackagingPage() {
         <div className="ikea-meta-row"><span>Client / IKEA Morocco</span><span>Location / Casablanca</span><span>Scope / 6 formats</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="ikea-visual-grid">
-        <figure className="ikea-hero-image"><img src="/assets/optimized/ikea/cups.jpg" alt="IKEA Morocco branded paper cups mockup" /><figcaption>Paper cup application</figcaption></figure>
-        <figure><img src="/assets/optimized/ikea/serviette.jpg" alt="IKEA branded napkin mockup" /><figcaption>Napkin application</figcaption></figure>
-        <figure><img src="/assets/optimized/ikea/sac-sand.jpg" alt="IKEA branded paper bag mockup" /><figcaption>Paper bag application</figcaption></figure>
-        <figure><img src="/assets/optimized/ikea/papier-tacos.jpg" alt="IKEA branded taco paper mockup" /><figcaption>Taco paper application</figcaption></figure>
+        <figure className="ikea-hero-image"><ProjectImage src="/assets/optimized/ikea/cups.jpg" alt="IKEA Morocco branded paper cups mockup" /><figcaption>Paper cup application</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/ikea/serviette.jpg" alt="IKEA branded napkin mockup" /><figcaption>Napkin application</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/ikea/sac-sand.jpg" alt="IKEA branded paper bag mockup" /><figcaption>Paper bag application</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/ikea/papier-tacos.jpg" alt="IKEA branded taco paper mockup" /><figcaption>Taco paper application</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Production process</div>
@@ -430,9 +567,10 @@ function IkeaPackagingPage() {
       </section>
       <section className="ikea-section">
         <div className="section-label">Dieline library</div>
-        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
+        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><ProjectImage src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section ikea-real-world"><div><div className="section-label">Real-world reference</div><h2>From artwork file to a physical food-service touchpoint.</h2></div><img src="/assets/optimized/ikea/real-cup.jpg" alt="Real IKEA branded paper cup reference held in hand" /></section>
+      <section className="ikea-section ikea-real-world"><div><div className="section-label">Real-world reference</div><h2>From artwork file to a physical food-service touchpoint.</h2></div><ProjectImage src="/assets/optimized/ikea/real-cup.jpg" alt="Real IKEA branded paper cup reference held in hand" /></section>
+      <ProjectContactCta />
       <footer className="site-footer"><span>{portfolio.name}</span><span>IKEA Morocco packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -450,10 +588,10 @@ function MiamPackagingPage() {
   ];
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <Header />
       <section className="project-page-shell miam-project-shell">
-        <a className="project-back" href="/#packaging"><ArrowUpRight size={15} /> Back to portfolio</a>
+        <ProjectBackLink href="/#packaging" />
         <div className="project-page-heading">
           <p className="preview-kicker">Bakery packaging / MIAM</p>
           <h1>A packaging system made with love.</h1>
@@ -462,10 +600,10 @@ function MiamPackagingPage() {
         <div className="ikea-meta-row"><span>Client / MIAM Café-Boutique</span><span>Scope / 7 formats</span><span>Focus / Food packaging</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="miam-visual-grid">
-        <figure className="miam-hero-image"><img src="/assets/optimized/miam/round-label.jpg" alt="MIAM round dessert labels in multiple color variants" /><figcaption>Label color system</figcaption></figure>
-        <figure><img src="/assets/optimized/miam/paper-bag.jpg" alt="MIAM paper bag mockup" /><figcaption>Paper bag</figcaption></figure>
-        <figure><img src="/assets/optimized/miam/goblet-carton.jpg" alt="MIAM branded carton cup mockup" /><figcaption>Carton cup</figcaption></figure>
-        <figure><img src="/assets/optimized/miam/stickers.jpg" alt="MIAM sticker and label mockups" /><figcaption>Sticker applications</figcaption></figure>
+        <figure className="miam-hero-image"><ProjectImage src="/assets/optimized/miam/round-label.jpg" alt="MIAM round dessert labels in multiple color variants" /><figcaption>Label color system</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/miam/paper-bag.jpg" alt="MIAM paper bag mockup" /><figcaption>Paper bag</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/miam/goblet-carton.jpg" alt="MIAM branded carton cup mockup" /><figcaption>Carton cup</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/miam/stickers.jpg" alt="MIAM sticker and label mockups" /><figcaption>Sticker applications</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -473,9 +611,10 @@ function MiamPackagingPage() {
       </section>
       <section className="ikea-section">
         <div className="section-label">Dieline library</div>
-        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
+        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><ProjectImage src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section miam-final-grid"><div><div className="section-label">Final applications</div><h2>One visual language across the bakery counter and takeaway experience.</h2></div><div className="miam-final-images"><img src="/assets/optimized/miam/sandwich-bag.jpg" alt="MIAM sandwich bag with bread" /><img src="/assets/optimized/miam/stickers.jpg" alt="MIAM stickers on a colored surface" /></div></section>
+      <section className="ikea-section miam-final-grid"><div><div className="section-label">Final applications</div><h2>One visual language across the bakery counter and takeaway experience.</h2></div><div className="miam-final-images"><ProjectImage src="/assets/optimized/miam/sandwich-bag.jpg" alt="MIAM sandwich bag with bread" /><ProjectImage src="/assets/optimized/miam/stickers.jpg" alt="MIAM stickers on a colored surface" /></div></section>
+      <ProjectContactCta />
       <footer className="site-footer"><span>{portfolio.name}</span><span>MIAM bakery packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -491,10 +630,10 @@ function CafeBonjourPackagingPage() {
   ];
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <Header />
       <section className="project-page-shell cafe-project-shell">
-        <a className="project-back" href="/#packaging"><ArrowUpRight size={15} /> Back to portfolio</a>
+        <ProjectBackLink href="/#packaging" />
         <div className="project-page-heading">
           <p className="preview-kicker">Gas station packaging / Café Bonjour</p>
           <h1>A takeaway packaging system for Café Bonjour.</h1>
@@ -503,10 +642,10 @@ function CafeBonjourPackagingPage() {
         <div className="ikea-meta-row"><span>Client / Café Bonjour</span><span>Context / Gas station food service</span><span>Scope / 5 dielines + 6 applications</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="cafe-visual-grid">
-        <figure className="cafe-hero-image"><img src="/assets/optimized/cafe-bonjour/goblet.jpg" alt="Café Bonjour branded takeaway coffee cup" /><figcaption>Coffee on the move</figcaption></figure>
-        <figure><img src="/assets/optimized/cafe-bonjour/tote-bag.jpg" alt="Café Bonjour branded paper tote bag" /><figcaption>Counter-to-car carry bag</figcaption></figure>
-        <figure><img src="/assets/optimized/cafe-bonjour/fries-bag.jpg" alt="Café Bonjour fries bag mockup" /><figcaption>Quick-service fries bag</figcaption></figure>
-        <figure><img src="/assets/optimized/cafe-bonjour/pastry-bag.jpg" alt="Café Bonjour pastry bag mockup" /><figcaption>Pastry takeaway</figcaption></figure>
+        <figure className="cafe-hero-image"><ProjectImage src="/assets/optimized/cafe-bonjour/goblet.jpg" alt="Café Bonjour branded takeaway coffee cup" /><figcaption>Coffee on the move</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/cafe-bonjour/tote-bag.jpg" alt="Café Bonjour branded paper tote bag" /><figcaption>Counter-to-car carry bag</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/cafe-bonjour/fries-bag.jpg" alt="Café Bonjour fries bag mockup" /><figcaption>Quick-service fries bag</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/cafe-bonjour/pastry-bag.jpg" alt="Café Bonjour pastry bag mockup" /><figcaption>Pastry takeaway</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -514,9 +653,10 @@ function CafeBonjourPackagingPage() {
       </section>
       <section className="ikea-section">
         <div className="section-label">Dieline library</div>
-        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
+        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><ProjectImage src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section cafe-final-grid"><div><div className="section-label">On-the-go food service</div><h2>One visual language across the station counter and the customer journey.</h2></div><div className="cafe-final-images"><img src="/assets/optimized/cafe-bonjour/sandwich-bag.jpg" alt="Café Bonjour sandwich bag with bread" /><img src="/assets/optimized/cafe-bonjour/pastry-box.jpg" alt="Café Bonjour pastry box mockup" /></div></section>
+      <section className="ikea-section cafe-final-grid"><div><div className="section-label">On-the-go food service</div><h2>One visual language across the station counter and the customer journey.</h2></div><div className="cafe-final-images"><ProjectImage src="/assets/optimized/cafe-bonjour/sandwich-bag.jpg" alt="Café Bonjour sandwich bag with bread" /><ProjectImage src="/assets/optimized/cafe-bonjour/pastry-box.jpg" alt="Café Bonjour pastry box mockup" /></div></section>
+      <ProjectContactCta />
       <footer className="site-footer"><span>{portfolio.name}</span><span>Café Bonjour packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -534,10 +674,10 @@ function DarDyafaPackagingPage() {
   ];
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <Header />
       <section className="project-page-shell dar-project-shell">
-        <a className="project-back" href="/#packaging"><ArrowUpRight size={15} /> Back to portfolio</a>
+        <ProjectBackLink href="/#packaging" />
         <div className="project-page-heading">
           <p className="preview-kicker">Restaurant packaging / Dar Dyafa</p>
           <h1>A Moroccan-inspired takeaway system for Dar Dyafa.</h1>
@@ -546,10 +686,10 @@ function DarDyafaPackagingPage() {
         <div className="ikea-meta-row"><span>Client / Dar Dyafa</span><span>Context / Restaurant takeaway</span><span>Scope / 7 dielines + 5 applications</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="dar-visual-grid">
-        <figure className="dar-hero-image"><img src="/assets/optimized/dar-dyafa/pizza-box.jpg" alt="Dar Dyafa patterned pizza box stack" /><figcaption>Delivery box system</figcaption></figure>
-        <figure><img src="/assets/optimized/dar-dyafa/tote-bag.jpg" alt="Dar Dyafa patterned paper tote bag" /><figcaption>Restaurant carry bag</figcaption></figure>
-        <figure><img src="/assets/optimized/dar-dyafa/goblet.jpg" alt="Dar Dyafa patterned takeaway coffee cup in hand" /><figcaption>Takeaway cup</figcaption></figure>
-        <figure><img src="/assets/optimized/dar-dyafa/fries-bag.jpg" alt="Dar Dyafa patterned fries bag" /><figcaption>Fries packaging</figcaption></figure>
+        <figure className="dar-hero-image"><ProjectImage src="/assets/optimized/dar-dyafa/pizza-box.jpg" alt="Dar Dyafa patterned pizza box stack" /><figcaption>Delivery box system</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/dar-dyafa/tote-bag.jpg" alt="Dar Dyafa patterned paper tote bag" /><figcaption>Restaurant carry bag</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/dar-dyafa/goblet.jpg" alt="Dar Dyafa patterned takeaway coffee cup in hand" /><figcaption>Takeaway cup</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/dar-dyafa/fries-bag.jpg" alt="Dar Dyafa patterned fries bag" /><figcaption>Fries packaging</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -557,9 +697,10 @@ function DarDyafaPackagingPage() {
       </section>
       <section className="ikea-section">
         <div className="section-label">Dieline library</div>
-        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
+        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><ProjectImage src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section dar-final-grid"><div><div className="section-label">Restaurant takeaway</div><h2>A consistent Dar Dyafa presence from the kitchen to the customer's table.</h2></div><div className="dar-final-images"><img src="/assets/optimized/dar-dyafa/sandwich-bag.jpg" alt="Dar Dyafa patterned sandwich bag with bread" /><img src="/assets/optimized/dar-dyafa/goblet.jpg" alt="Dar Dyafa takeaway coffee cup held in hand" /></div></section>
+      <section className="ikea-section dar-final-grid"><div><div className="section-label">Restaurant takeaway</div><h2>A consistent Dar Dyafa presence from the kitchen to the customer's table.</h2></div><div className="dar-final-images"><ProjectImage src="/assets/optimized/dar-dyafa/sandwich-bag.jpg" alt="Dar Dyafa patterned sandwich bag with bread" /><ProjectImage src="/assets/optimized/dar-dyafa/goblet.jpg" alt="Dar Dyafa takeaway coffee cup held in hand" /></div></section>
+      <ProjectContactCta />
       <footer className="site-footer"><span>{portfolio.name}</span><span>Dar Dyafa packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -573,10 +714,10 @@ function RamPackagingPage() {
   ];
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <Header />
       <section className="project-page-shell ram-project-shell">
-        <a className="project-back" href="/#packaging"><ArrowUpRight size={15} /> Back to portfolio</a>
+        <ProjectBackLink href="/#packaging" />
         <div className="project-page-heading">
           <p className="preview-kicker">Airline hospitality / Royal Air Maroc</p>
           <h1>Onboard packaging with a Moroccan point of view.</h1>
@@ -585,10 +726,10 @@ function RamPackagingPage() {
         <div className="ikea-meta-row"><span>Client / Royal Air Maroc</span><span>Context / Airline hospitality</span><span>Scope / 3 production files + 4 applications</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="ram-visual-grid">
-        <figure className="ram-hero-image"><img src="/assets/optimized/ram/cup-beige.jpg" alt="Royal Air Maroc beige 8 oz paper cup" /><figcaption>8 oz onboard cup</figcaption></figure>
-        <figure><img src="/assets/optimized/ram/napkin-red.jpg" alt="Royal Air Maroc red napkin packaging" /><figcaption>Red service variant</figcaption></figure>
-        <figure><img src="/assets/optimized/ram/napkin-beige.jpg" alt="Royal Air Maroc beige napkin packaging" /><figcaption>Beige service variant</figcaption></figure>
-        <figure><img src="/assets/optimized/ram/napkin-white.jpg" alt="Royal Air Maroc white napkin packaging" /><figcaption>White service variant</figcaption></figure>
+        <figure className="ram-hero-image"><ProjectImage src="/assets/optimized/ram/cup-beige.jpg" alt="Royal Air Maroc beige 8 oz paper cup" /><figcaption>8 oz onboard cup</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/ram/napkin-red.jpg" alt="Royal Air Maroc red napkin packaging" /><figcaption>Red service variant</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/ram/napkin-beige.jpg" alt="Royal Air Maroc beige napkin packaging" /><figcaption>Beige service variant</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/ram/napkin-white.jpg" alt="Royal Air Maroc white napkin packaging" /><figcaption>White service variant</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -596,9 +737,10 @@ function RamPackagingPage() {
       </section>
       <section className="ikea-section">
         <div className="section-label">Dieline library</div>
-        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
+        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><ProjectImage src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section ram-final-grid"><div><div className="section-label">Onboard hospitality</div><h2>Small-format packaging that carries the airline identity into every service moment.</h2></div><div className="ram-final-images"><img src="/assets/optimized/ram/cup-beige.jpg" alt="Royal Air Maroc paper cup mockup" /><img src="/assets/optimized/ram/napkin-red.jpg" alt="Royal Air Maroc red napkin mockup" /></div></section>
+      <section className="ikea-section ram-final-grid"><div><div className="section-label">Onboard hospitality</div><h2>Small-format packaging that carries the airline identity into every service moment.</h2></div><div className="ram-final-images"><ProjectImage src="/assets/optimized/ram/cup-beige.jpg" alt="Royal Air Maroc paper cup mockup" /><ProjectImage src="/assets/optimized/ram/napkin-red.jpg" alt="Royal Air Maroc red napkin mockup" /></div></section>
+      <ProjectContactCta />
       <footer className="site-footer"><span>{portfolio.name}</span><span>Royal Air Maroc packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -616,10 +758,10 @@ function RoyaleMansourPackagingPage() {
   ];
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <Header />
       <section className="project-page-shell royale-project-shell">
-        <a className="project-back" href="/#packaging"><ArrowUpRight size={15} /> Back to portfolio</a>
+        <ProjectBackLink href="/#packaging" />
         <div className="project-page-heading">
           <p className="preview-kicker">Luxury hospitality / Royale Mansour Morocco</p>
           <h1>Food-service packaging with a quiet luxury finish.</h1>
@@ -628,10 +770,10 @@ function RoyaleMansourPackagingPage() {
         <div className="ikea-meta-row"><span>Client / Royale Mansour Morocco</span><span>Context / Luxury hotel food service</span><span>Scope / 7 dielines + 7 applications</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="royale-visual-grid">
-        <figure className="royale-hero-image"><img src="/assets/optimized/royale-mansour/paper-bowl.jpg" alt="Royale Mansour paper bowls with gold monogram" /><figcaption>Premium takeaway bowl</figcaption></figure>
-        <figure><img src="/assets/optimized/royale-mansour/burger-box.jpg" alt="Royale Mansour burger box mockup" /><figcaption>Burger box</figcaption></figure>
-        <figure><img src="/assets/optimized/royale-mansour/sandwich-paper.jpg" alt="Royale Mansour geometric sandwich paper" /><figcaption>Geometric food paper</figcaption></figure>
-        <figure><img src="/assets/optimized/royale-mansour/ice-cream-bowl.jpg" alt="Royale Mansour ice cream bowl mockup" /><figcaption>Ice cream service</figcaption></figure>
+        <figure className="royale-hero-image"><ProjectImage src="/assets/optimized/royale-mansour/paper-bowl.jpg" alt="Royale Mansour paper bowls with gold monogram" /><figcaption>Premium takeaway bowl</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/royale-mansour/burger-box.jpg" alt="Royale Mansour burger box mockup" /><figcaption>Burger box</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/royale-mansour/sandwich-paper.jpg" alt="Royale Mansour geometric sandwich paper" /><figcaption>Geometric food paper</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/royale-mansour/ice-cream-bowl.jpg" alt="Royale Mansour ice cream bowl mockup" /><figcaption>Ice cream service</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -639,9 +781,10 @@ function RoyaleMansourPackagingPage() {
       </section>
       <section className="ikea-section">
         <div className="section-label">Dieline library</div>
-        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
+        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><ProjectImage src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section royale-final-grid"><div><div className="section-label">Luxury takeaway</div><h2>A consistent hotel presence across every food-service touchpoint.</h2></div><div className="royale-final-images"><img src="/assets/optimized/royale-mansour/waffle-box.jpg" alt="Royale Mansour waffle box mockup" /><img src="/assets/optimized/royale-mansour/sandwich-bag.jpg" alt="Royale Mansour pastry sandwich bag mockup" /></div></section>
+      <section className="ikea-section royale-final-grid"><div><div className="section-label">Luxury takeaway</div><h2>A consistent hotel presence across every food-service touchpoint.</h2></div><div className="royale-final-images"><ProjectImage src="/assets/optimized/royale-mansour/waffle-box.jpg" alt="Royale Mansour waffle box mockup" /><ProjectImage src="/assets/optimized/royale-mansour/sandwich-bag.jpg" alt="Royale Mansour pastry sandwich bag mockup" /></div></section>
+      <ProjectContactCta />
       <footer className="site-footer"><span>{portfolio.name}</span><span>Royale Mansour packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -656,10 +799,10 @@ function ChilisPackagingPage() {
   ];
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <Header />
       <section className="project-page-shell chilis-project-shell">
-        <a className="project-back" href="/#packaging"><ArrowUpRight size={15} /> Back to portfolio</a>
+        <ProjectBackLink href="/#packaging" />
         <div className="project-page-heading">
           <p className="preview-kicker">Restaurant packaging / Chili's</p>
           <h1>A bold takeaway system for Chili's.</h1>
@@ -668,10 +811,10 @@ function ChilisPackagingPage() {
         <div className="ikea-meta-row"><span>Client / Chili's</span><span>Context / Restaurant takeaway</span><span>Scope / 4 dielines + 5 applications</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="chilis-visual-grid">
-        <figure className="chilis-hero-image"><img src="/assets/optimized/chilis/burger-box.jpg" alt="Chili's burger box mockup with red interior" /><figcaption>Burger packaging</figcaption></figure>
-        <figure><img src="/assets/optimized/chilis/tote-bag.jpg" alt="Chili's kraft paper carry bag" /><figcaption>Carry bag</figcaption></figure>
-        <figure><img src="/assets/optimized/chilis/stickers.jpg" alt="Chili's sticker roll mockup" /><figcaption>Sealing stickers</figcaption></figure>
-        <figure><img src="/assets/optimized/chilis/napkin.jpg" alt="Chili's branded napkin mockup" /><figcaption>Table service</figcaption></figure>
+        <figure className="chilis-hero-image"><ProjectImage src="/assets/optimized/chilis/burger-box.jpg" alt="Chili's burger box mockup with red interior" /><figcaption>Burger packaging</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/chilis/tote-bag.jpg" alt="Chili's kraft paper carry bag" /><figcaption>Carry bag</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/chilis/stickers.jpg" alt="Chili's sticker roll mockup" /><figcaption>Sealing stickers</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/chilis/napkin.jpg" alt="Chili's branded napkin mockup" /><figcaption>Table service</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -679,9 +822,10 @@ function ChilisPackagingPage() {
       </section>
       <section className="ikea-section">
         <div className="section-label">Dieline library</div>
-        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
+        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><ProjectImage src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section chilis-final-grid"><div><div className="section-label">Restaurant takeaway</div><h2>A clear, energetic identity across the full Chili's handoff.</h2></div><div className="chilis-final-images"><img src="/assets/optimized/chilis/sandwich-paper.jpg" alt="Chili's sandwich paper mockup" /><img src="/assets/optimized/chilis/tote-bag.jpg" alt="Chili's kraft carry bag mockup" /></div></section>
+      <section className="ikea-section chilis-final-grid"><div><div className="section-label">Restaurant takeaway</div><h2>A clear, energetic identity across the full Chili's handoff.</h2></div><div className="chilis-final-images"><ProjectImage src="/assets/optimized/chilis/sandwich-paper.jpg" alt="Chili's sandwich paper mockup" /><ProjectImage src="/assets/optimized/chilis/tote-bag.jpg" alt="Chili's kraft carry bag mockup" /></div></section>
+      <ProjectContactCta />
       <footer className="site-footer"><span>{portfolio.name}</span><span>Chili's packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -694,10 +838,10 @@ function HuaweiPackagingPage() {
   ];
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <Header />
       <section className="project-page-shell huawei-project-shell">
-        <a className="project-back" href="/#packaging"><ArrowUpRight size={15} /> Back to portfolio</a>
+        <ProjectBackLink href="/#packaging" />
         <div className="project-page-heading">
           <p className="preview-kicker">Corporate hospitality / Huawei Northern Africa</p>
           <h1>A focused hospitality kit for Huawei.</h1>
@@ -706,8 +850,8 @@ function HuaweiPackagingPage() {
         <div className="ikea-meta-row"><span>Client / Huawei Northern Africa</span><span>Context / Corporate hospitality</span><span>Scope / 2 dielines + 2 applications</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="huawei-visual-grid">
-        <figure><img src="/assets/optimized/huawei/bag.jpg" alt="Huawei Northern Africa branded tote bags" /><figcaption>Event and hospitality tote</figcaption></figure>
-        <figure><img src="/assets/optimized/huawei/cup.jpg" alt="Huawei Northern Africa 4 oz paper coffee cup" /><figcaption>4 oz coffee cup</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/huawei/bag.jpg" alt="Huawei Northern Africa branded tote bags" /><figcaption>Event and hospitality tote</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/huawei/cup.jpg" alt="Huawei Northern Africa 4 oz paper coffee cup" /><figcaption>4 oz coffee cup</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -715,9 +859,10 @@ function HuaweiPackagingPage() {
       </section>
       <section className="ikea-section">
         <div className="section-label">Dieline library</div>
-        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
+        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><ProjectImage src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section huawei-final-grid"><div><div className="section-label">Corporate hospitality</div><h2>A precise identity system for small, useful brand touchpoints.</h2></div><div className="huawei-final-images"><img src="/assets/optimized/huawei/cup.jpg" alt="Huawei Northern Africa coffee cup mockup" /><img src="/assets/optimized/huawei/bag.jpg" alt="Huawei Northern Africa tote bag mockup" /></div></section>
+      <section className="ikea-section huawei-final-grid"><div><div className="section-label">Corporate hospitality</div><h2>A precise identity system for small, useful brand touchpoints.</h2></div><div className="huawei-final-images"><ProjectImage src="/assets/optimized/huawei/cup.jpg" alt="Huawei Northern Africa coffee cup mockup" /><ProjectImage src="/assets/optimized/huawei/bag.jpg" alt="Huawei Northern Africa tote bag mockup" /></div></section>
+      <ProjectContactCta />
       <footer className="site-footer"><span>{portfolio.name}</span><span>Huawei packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -731,10 +876,10 @@ function DuneCremePackagingPage() {
   ];
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <Header />
       <section className="project-page-shell dune-project-shell">
-        <a className="project-back" href="/#packaging"><ArrowUpRight size={15} /> Back to portfolio</a>
+        <ProjectBackLink href="/#packaging" />
         <div className="project-page-heading">
           <p className="preview-kicker">Bakery packaging / Dune Crème</p>
           <h1>A warm, tactile packaging system for Dune Crème.</h1>
@@ -743,9 +888,9 @@ function DuneCremePackagingPage() {
         <div className="ikea-meta-row"><span>Client / Dune Crème</span><span>Context / Bakery service</span><span>Scope / 3 dielines + 3 applications</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="dune-visual-grid">
-        <figure className="dune-hero-image"><img src="/assets/optimized/dune-creme/labels.jpg" alt="Dune Crème sticker label roll mockup" /><figcaption>Bakery label system</figcaption></figure>
-        <figure><img src="/assets/optimized/dune-creme/tote-bag.jpg" alt="Dune Crème kraft carry bag" /><figcaption>Kraft carry bag</figcaption></figure>
-        <figure><img src="/assets/optimized/dune-creme/napkin.jpg" alt="Dune Crème branded napkin at a table setting" /><figcaption>Table service</figcaption></figure>
+        <figure className="dune-hero-image"><ProjectImage src="/assets/optimized/dune-creme/labels.jpg" alt="Dune Crème sticker label roll mockup" /><figcaption>Bakery label system</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/dune-creme/tote-bag.jpg" alt="Dune Crème kraft carry bag" /><figcaption>Kraft carry bag</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/dune-creme/napkin.jpg" alt="Dune Crème branded napkin at a table setting" /><figcaption>Table service</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -753,9 +898,10 @@ function DuneCremePackagingPage() {
       </section>
       <section className="ikea-section">
         <div className="section-label">Dieline library</div>
-        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
+        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><ProjectImage src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section dune-final-grid"><div><div className="section-label">Bakery takeaway</div><h2>A gentle visual language carried from the counter to the customer's hands.</h2></div><div className="dune-final-images"><img src="/assets/optimized/dune-creme/tote-bag.jpg" alt="Dune Crème kraft carry bag mockup" /><img src="/assets/optimized/dune-creme/labels.jpg" alt="Dune Crème label roll mockup" /></div></section>
+      <section className="ikea-section dune-final-grid"><div><div className="section-label">Bakery takeaway</div><h2>A gentle visual language carried from the counter to the customer's hands.</h2></div><div className="dune-final-images"><ProjectImage src="/assets/optimized/dune-creme/tote-bag.jpg" alt="Dune Crème kraft carry bag mockup" /><ProjectImage src="/assets/optimized/dune-creme/labels.jpg" alt="Dune Crème label roll mockup" /></div></section>
+      <ProjectContactCta />
       <footer className="site-footer"><span>{portfolio.name}</span><span>Dune Crème packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -769,10 +915,10 @@ function QuincePackagingPage() {
   ];
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <Header />
       <section className="project-page-shell quince-project-shell">
-        <a className="project-back" href="/#packaging"><ArrowUpRight size={15} /> Back to portfolio</a>
+        <ProjectBackLink href="/#packaging" />
         <div className="project-page-heading">
           <p className="preview-kicker">Beverage packaging / QUINCE Coffee and Chocolat</p>
           <h1>A three-size cup system for QUINCE.</h1>
@@ -781,7 +927,7 @@ function QuincePackagingPage() {
         <div className="ikea-meta-row"><span>Client / QUINCE Coffee and Chocolat</span><span>Context / Coffee service</span><span>Scope / 3 dielines + 1 application set</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="quince-visual-grid">
-        <figure><img src="/assets/optimized/quince/cups.jpg" alt="QUINCE Coffee and Chocolat paper cups in three sizes" /><figcaption>4 oz, 8 oz, and 12 oz cup family</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/quince/cups.jpg" alt="QUINCE Coffee and Chocolat paper cups in three sizes" /><figcaption>4 oz, 8 oz, and 12 oz cup family</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -789,9 +935,10 @@ function QuincePackagingPage() {
       </section>
       <section className="ikea-section">
         <div className="section-label">Dieline library</div>
-        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
+        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><ProjectImage src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section quince-final-grid"><div><div className="section-label">Coffee service</div><h2>A recognizable QUINCE moment at every cup size.</h2></div><img src="/assets/optimized/quince/cups.jpg" alt="QUINCE coffee cup application set" /></section>
+      <section className="ikea-section quince-final-grid"><div><div className="section-label">Coffee service</div><h2>A recognizable QUINCE moment at every cup size.</h2></div><ProjectImage src="/assets/optimized/quince/cups.jpg" alt="QUINCE coffee cup application set" /></section>
+      <ProjectContactCta />
       <footer className="site-footer"><span>{portfolio.name}</span><span>QUINCE packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -804,10 +951,10 @@ function KeatPackagingPage() {
   ];
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <Header />
       <section className="project-page-shell keat-project-shell">
-        <a className="project-back" href="/#packaging"><ArrowUpRight size={15} /> Back to portfolio</a>
+        <ProjectBackLink href="/#packaging" />
         <div className="project-page-heading">
           <p className="preview-kicker">Food packaging / Keat</p>
           <h1>Two material directions for a Keat food box.</h1>
@@ -816,7 +963,7 @@ function KeatPackagingPage() {
         <div className="ikea-meta-row"><span>Client / Keat</span><span>Context / Food packaging</span><span>Scope / 2 dielines + 2 material directions</span><span>Role / Packaging designer</span></div>
       </section>
       <section className="keat-visual-grid">
-        <figure><img src="/assets/optimized/keat/boxes.jpg" alt="Keat food boxes in white and kraft material directions" /><figcaption>White and kraft directions</figcaption></figure>
+        <figure><ProjectImage src="/assets/optimized/keat/boxes.jpg" alt="Keat food boxes in white and kraft material directions" /><figcaption>White and kraft directions</figcaption></figure>
       </section>
       <section className="ikea-section">
         <div className="section-label">Packaging system</div>
@@ -824,9 +971,10 @@ function KeatPackagingPage() {
       </section>
       <section className="ikea-section">
         <div className="section-label">Dieline library</div>
-        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
+        <div className="ikea-dieline-grid">{dielines.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><ProjectImage src={item.preview} alt={`${item.title} dieline preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
-      <section className="ikea-section keat-final-grid"><div><div className="section-label">Food box study</div><h2>A simple structure with two distinct material personalities.</h2></div><img src="/assets/optimized/keat/boxes.jpg" alt="Keat white and kraft food box mockups" /></section>
+      <section className="ikea-section keat-final-grid"><div><div className="section-label">Food box study</div><h2>A simple structure with two distinct material personalities.</h2></div><ProjectImage src="/assets/optimized/keat/boxes.jpg" alt="Keat white and kraft food box mockups" /></section>
+      <ProjectContactCta />
       <footer className="site-footer"><span>{portfolio.name}</span><span>Keat packaging</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
@@ -845,10 +993,10 @@ function GastonGaliPrintPage() {
   ];
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <Header />
       <section className="project-page-shell print-project-shell">
-        <a className="project-back" href="/#print"><ArrowUpRight size={15} /> Back to portfolio</a>
+        <ProjectBackLink href="/#print" />
         <div className="project-page-heading">
           <p className="preview-kicker">Print design / Gaston Gali</p>
           <h1>Commercial print made tangible.</h1>
@@ -856,7 +1004,7 @@ function GastonGaliPrintPage() {
         </div>
         <div className="ikea-meta-row"><span>Clients / Gaston Gali + Karty</span><span>Context / Commercial print</span><span>Scope / 8 designs + mockups</span><span>Role / Print designer</span></div>
       </section>
-      <section className="print-mockup-grid">{menus.map((menu) => <figure key={menu.title}><img src={menu.mockup} alt={`${menu.title} printed menu mockup`} /><figcaption><strong>{menu.title}</strong><span>{menu.note}</span></figcaption></figure>)}</section>
+      <section className="print-mockup-grid">{menus.map((menu) => <figure key={menu.title}><ProjectImage src={menu.mockup} alt={`${menu.title} printed menu mockup`} /><figcaption><strong>{menu.title}</strong><span>{menu.note}</span></figcaption></figure>)}</section>
       <section className="ikea-section">
         <div className="section-label">Print system</div>
         <div className="ikea-process"><article><span>01</span><h2>Hierarchy first</h2><p>Organized menus around quick scanning, clear categories, and readable ordering moments.</p></article><article><span>02</span><h2>Audience variants</h2><p>Separated the main restaurant experience from the more playful kids menu directions.</p></article><article><span>03</span><h2>Format aware</h2><p>Considered how each menu would work as a hand-held printed piece, not only as a flat screen layout.</p></article><article><span>04</span><h2>Production ready</h2><p>Kept the original PDF artwork available for print review, handoff, and future revisions.</p></article></div>
@@ -866,9 +1014,105 @@ function GastonGaliPrintPage() {
         <div className="print-asset-grid">{menus.map((menu) => <a className="ikea-dieline-card" href={menu.pdf} target="_blank" rel="noreferrer" key={menu.title}><span>{menu.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div>
       </section>
       <section className="ikea-section print-final-grid"><div><div className="section-label">What this demonstrates</div><h2>A print system that gives every audience its own tone.</h2></div><p>Restaurant print design is part information architecture, part atmosphere. The menu has to guide a decision quickly while still carrying the character of the place.</p></section>
+      <ProjectContactCta />
       <footer className="site-footer"><span>{portfolio.name}</span><span>Gaston Gali print design</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
   );
+}
+
+type PrintProjectItem = {
+  title: string;
+  note: string;
+  mockup: string;
+  alt: string;
+  pdf: string;
+};
+
+function PrintProjectPage({
+  kicker,
+  title,
+  description,
+  client,
+  context,
+  scope,
+  items,
+  footerTitle,
+}: {
+  kicker: string;
+  title: string;
+  description: string;
+  client: string;
+  context: string;
+  scope: string;
+  items: PrintProjectItem[];
+  footerTitle: string;
+}) {
+  return (
+    <main id="main-content" tabIndex={-1}>
+      <Header />
+      <section className="project-page-shell print-project-shell">
+        <ProjectBackLink href="/#print" />
+        <div className="project-page-heading">
+          <p className="preview-kicker">{kicker}</p>
+          <h1>{title}</h1>
+          <p>{description}</p>
+        </div>
+        <div className="ikea-meta-row"><span>Client / {client}</span><span>Context / {context}</span><span>Scope / {scope}</span><span>Role / Print designer</span></div>
+      </section>
+      <section className="print-mockup-grid">
+        {items.map((item) => (
+          <figure key={item.title}>
+            <ProjectImage src={item.mockup} alt={item.alt} />
+            <figcaption><strong>{item.title}</strong><span>{item.note}</span></figcaption>
+          </figure>
+        ))}
+      </section>
+      <section className="ikea-section">
+        <div className="section-label">Print file library</div>
+        <div className="print-asset-grid">
+          {items.map((item) => (
+            <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}>
+              <span>{item.title}</span>
+              <small>Open PDF <ArrowUpRight size={14} /></small>
+            </a>
+          ))}
+        </div>
+      </section>
+      <section className="ikea-section print-final-grid"><div><div className="section-label">What this demonstrates</div><h2>A production-minded print system with a clear visual family.</h2></div><p>The final artwork keeps the brand recognizable while respecting the practical realities of packaging, shelf reading, and repeat production.</p></section>
+      <ProjectContactCta />
+      <footer className="site-footer"><span>{portfolio.name}</span><span>{footerTitle}</span><span>© {new Date().getFullYear()}</span></footer>
+    </main>
+  );
+}
+
+function KartyFreezingBagPrintPage() {
+  return <PrintProjectPage
+    kicker="Print design / Karty"
+    title="A clear frozen-food bag for Karty."
+    description="Prepared the printed bag artwork for Karty's freezing product line, balancing product information, multilingual communication, brand recognition, and shelf-facing impact."
+    client="Karty"
+    context="Frozen-food packaging"
+    scope="1 bag artwork + production PDF"
+    footerTitle="Karty freezing bag print"
+    items={[{ title: "Freezing bag", note: "Printed frozen-food packaging", mockup: "/assets/optimized/print-menus/karty-freezing-bag.jpg", alt: "Karty freezing bag printed packaging", pdf: "/assets/print-menus/karty-freezing-bag.pdf" }]}
+  />;
+}
+
+function SopalinPrintPage() {
+  return <PrintProjectPage
+    kicker="Print design / Sopalin"
+    title="One product family, three clear pack directions."
+    description="Developed the printed packaging range for Karty Sopalin ECO, JUMBO, and MAXI, using a shared information structure with distinct color-coded variants."
+    client="Karty / Sopalin"
+    context="Consumer paper goods"
+    scope="3 product variants + production PDFs"
+    footerTitle="Sopalin paper range print"
+    items={[
+      { title: "Sopalin ECO", note: "Blue product variant", mockup: "/assets/optimized/print-menus/sopalin/sopalin-eco.jpg", alt: "Sopalin ECO printed paper roll packaging", pdf: "/assets/print-menus/sopalin/sopalin-eco.pdf" },
+      { title: "Sopalin JUMBO", note: "Purple product variant", mockup: "/assets/optimized/print-menus/sopalin/sopalin-jumbo.jpg", alt: "Sopalin JUMBO printed paper roll packaging", pdf: "/assets/print-menus/sopalin/sopalin-jumbo.pdf" },
+      { title: "Sopalin MAXI", note: "Green product variant", mockup: "/assets/optimized/print-menus/sopalin/sopalin-maxi.jpg", alt: "Sopalin MAXI printed paper roll packaging", pdf: "/assets/print-menus/sopalin/sopalin-maxi.pdf" },
+    ]}
+  />;
 }
 
 function PhenixIdentityPage() {
@@ -880,10 +1124,10 @@ function PhenixIdentityPage() {
   ];
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <Header />
       <section className="project-page-shell phenix-project-shell">
-        <a className="project-back" href="/#identity"><ArrowUpRight size={15} /> Back to portfolio</a>
+        <ProjectBackLink href="/#identity" />
         <div className="project-page-heading">
           <p className="preview-kicker">Brand identity / Phenix Kitchen</p>
           <h1>A bold restaurant identity built around renewal.</h1>
@@ -891,11 +1135,11 @@ function PhenixIdentityPage() {
         </div>
         <div className="ikea-meta-row"><span>Client / Phenix Kitchen</span><span>Context / Restaurant identity</span><span>Scope / Logo + 4 brand assets</span><span>Role / Brand identity designer</span></div>
       </section>
-      <section className="phenix-hero-grid"><figure><img src="/assets/optimized/phenix/logo.jpg" alt="Phenix Kitchen phoenix logo" /><figcaption>Primary logo direction</figcaption></figure></section>
+      <section className="phenix-hero-grid"><figure><ProjectImage src="/assets/optimized/phenix/logo.jpg" alt="Phenix Kitchen phoenix logo" /><figcaption>Primary logo direction</figcaption></figure></section>
       <section className="ikea-section">
         <div className="section-label">Identity in context</div>
         <div className="phenix-mockup-grid">
-          <figure><img src="/assets/optimized/phenix/identity-mockup.jpg" alt="Phenix Kitchen stationery and brochure mockup" /><figcaption>Stationery and brochure direction</figcaption></figure>
+          <figure><ProjectImage src="/assets/optimized/phenix/identity-mockup.jpg" alt="Phenix Kitchen stationery and brochure mockup" /><figcaption>Stationery and brochure direction</figcaption></figure>
         </div>
       </section>
       <section className="ikea-section">
@@ -903,11 +1147,26 @@ function PhenixIdentityPage() {
         <div className="phenix-brief-grid"><div><h2>From fire to flavor.</h2><p>Phenix Kitchen is positioned as an expressive, modern restaurant brand: warm, memorable, and full of movement. The phoenix symbol communicates rebirth, energy, and transformation, while the kitchen name grounds the identity in food and hospitality.</p></div><div className="phenix-palette"><div><span style={{background:"#100668"}}></span><strong>Midnight Indigo</strong><small>#100668 / Foundation</small></div><div><span style={{background:"#f51f26"}}></span><strong>Ember Red</strong><small>#F51F26 / Energy</small></div><div><span style={{background:"#f6c51d"}}></span><strong>Sun Gold</strong><small>#F6C51D / Warmth</small></div><div><span style={{background:"#69c96b"}}></span><strong>Fresh Green</strong><small>#69C96B / Freshness</small></div></div></div>
       </section>
       <section className="ikea-section"><div className="section-label">Identity system</div><div className="ikea-process"><article><span>01</span><h2>Logo symbol</h2><p>Designed a phoenix mark with a strong silhouette and expressive color movement.</p></article><article><span>02</span><h2>Color language</h2><p>Balanced a deep base with flame and freshness accents for broad restaurant use.</p></article><article><span>03</span><h2>Bilingual tools</h2><p>Extended the identity into French and Arabic brochures for clear local communication.</p></article><article><span>04</span><h2>Brand essentials</h2><p>Prepared core stationery and business materials for everyday restaurant operations.</p></article></div></section>
-      <section className="ikea-section"><div className="section-label">Brand asset library</div><div className="phenix-asset-grid">{assets.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><img src={item.preview} alt={`${item.title} preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div></section>
+      <section className="ikea-section"><div className="section-label">Brand asset library</div><div className="phenix-asset-grid">{assets.map((item) => <a className="ikea-dieline-card" href={item.pdf} target="_blank" rel="noreferrer" key={item.title}><ProjectImage src={item.preview} alt={`${item.title} preview`} /><span>{item.title}</span><small>Open PDF <ArrowUpRight size={14} /></small></a>)}</div></section>
       <section className="ikea-section phenix-concepts"><div className="section-label">Concept extensions</div><div className="phenix-concepts-intro"><h2>Three directions ready to develop from the identity.</h2><p>These are visual explorations built from the existing logo, palette, and typographic character.</p></div><div className="phenix-concept-grid"><article className="phenix-concept-menu"><span>PHENIX KITCHEN</span><strong>MENU</strong><small>From fire to flavor</small></article><article className="phenix-concept-social"><small>NEW SEASON / 01</small><strong>RISE<br />AND<br />DINE</strong><span>PHENIX KITCHEN</span></article><article className="phenix-concept-pack"><span>PHENIX</span><strong>KITCHEN</strong><small>Takeaway direction</small></article></div></section>
       <section className="ikea-section phenix-next-grid"><div><div className="section-label">Suggested next steps</div><h2>Extend the phoenix into the full guest experience.</h2></div><p>Add menu design, exterior signage, staff uniforms, takeaway packaging, social media templates, food photography direction, and a compact brand guideline document.</p></section>
+      <ProjectContactCta />
       <footer className="site-footer"><span>{portfolio.name}</span><span>Phenix Kitchen identity</span><span>© {new Date().getFullYear()}</span></footer>
     </main>
+  );
+}
+
+function ProjectContactCta() {
+  return (
+    <section className="project-contact-cta" aria-labelledby="project-contact-heading">
+      <div>
+        <div className="section-label">Have a project in mind?</div>
+        <h2 id="project-contact-heading">Let's make the next one clear, useful, and hard to ignore.</h2>
+      </div>
+      <a className="project-contact-cta-link" href="/#contact">
+        Start a conversation <ArrowUpRight size={18} aria-hidden="true" />
+      </a>
+    </section>
   );
 }
 

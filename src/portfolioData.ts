@@ -1,13 +1,12 @@
 export const portfolio = {
   name: "Achraf Ouakrim",
-  role: "Graphic Designer",
+  role: "Graphic Designer & Vibecoder",
   location: "Tamesna, Morocco",
   email: "ouakrim.achraf@outlook.com",
-  phone: "+212 6 97 93 84 10",
   logo: "/assets/achraf-logo.svg",
-  headline: "Achraf Ouakrim designs brands, packaging, and visual campaigns.",
+  headline: "Achraf Ouakrim designs brands, packaging, visual campaigns, and digital experiences.",
   summary:
-    "Graphic designer based in Tamesna with hands-on experience across catalogues, flyers, vehicle wraps, packaging, social media visuals, logos, and brand identity.",
+    "Graphic designer and vibecoder based in Tamesna, combining brand identity, packaging, print, and social visuals with thoughtful digital experiences.",
   availability: "Graphic designer at KARA Distribution since 2019",
   headshot: "/assets/optimized/achraf-portrait-vector.jpg",
   headshotAlt: "Portrait of Achraf Ouakrim",
@@ -95,7 +94,7 @@ export const portfolio = {
           title: "Karty freezing bag",
           meta: "Product packaging print",
           scope: "Frozen-food bag artwork / production layout",
-          href: "/work/gaston-gali-menu-print",
+          href: "/work/karty-freezing-bag-print",
           images: [
             { src: "/assets/optimized/print-menus/karty-freezing-bag.jpg", alt: "Karty freezing bag printed packaging" },
           ],
@@ -105,7 +104,7 @@ export const portfolio = {
           title: "Sopalin paper range",
           meta: "Consumer packaging print",
           scope: "Eco / Jumbo / Maxi printed roll systems",
-          href: "/work/gaston-gali-menu-print",
+          href: "/work/sopalin-print-range",
           images: [
             { src: "/assets/optimized/print-menus/sopalin/sopalin-eco.jpg", alt: "Sopalin Eco printed roll packaging" },
             { src: "/assets/optimized/print-menus/sopalin/sopalin-jumbo.jpg", alt: "Sopalin Jumbo printed roll packaging" },
